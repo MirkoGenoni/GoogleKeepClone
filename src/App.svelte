@@ -1,4 +1,7 @@
 <script>
+    import { element } from "svelte/internal";
+
+
 	let firstcolumn=[]
 	let secondcolumn=[]
 	let thirdcolumn=[]
@@ -8,29 +11,46 @@
 	let columncollect=[
 		firstcolumn, secondcolumn, thirdcolumn, fourthcolumn, fifthcolumn, sixthcolumn
 	]
+	let allElements = [];
 
-	let column = 0;
 	let postitid = 0;
 	let titleAdd="";
 	let bodyAdd="";
 
+
+	let newpost;
+
+	function clearColumnState(currentValue){
+		currentValue.length=0;
+	}
+
+	function populateColumns(currentValue, index){
+		columncollect[index%6].push(currentValue);
+	}
+
 	function addNote(){
-		columncollect[column].push({id: postitid, title: titleAdd, body: bodyAdd});
-		if(column<5){
-			column++;
-		}else{
-			column=0;
-		}
+		columncollect.forEach(clearColumnState);
+		allElements.unshift({id: postitid, title: titleAdd, body: bodyAdd});
+		allElements.forEach(populateColumns);
+		columncollect=columncollect;
 		postitid++;
-		columncollect[column]=columncollect[column];
+		newpost.value="";
+		titleAdd="";
+		bodyAdd="";
 		console.log(columncollect)
 	}
 
 </script>
 
 <main>
-	<div id="navbar">
-		<button on:click={addNote}>Click</button>
+	<div id="page">
+	<div id="newNote">
+		<div class="newpostit">
+			<textarea placeholder="Prova" id="newtitle" class="title" bind:this={newpost} bind:value={titleAdd}></textarea>
+		<div id="noteAdd">
+			<button id="addnote" on:click={addNote}>Click</button>
+		</div>
+		</div>
 	</div>
 	<div id="notecontainer">
 		{#each columncollect as column}
@@ -44,47 +64,84 @@
 			</div>
 		{/each}
 	</div>
+	</div>
 </main>
 
 <style>
-	#navbar{
+	:global(body){
+		margin: 0px;
+		padding: 0px;
+	}
+
+	#page{
 		width: 100%;
-		height: 5vh;
+	}
+	#noteAdd{
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		margin: 0px;
+		width: 100%;
+		height: fit-content;
+		border-bottom-style: solid;
+		border-bottom-width: 1px;
+	}
+
+	#addnote{
+		margin-top: 2px;
+		margin-bottom: 2px;
+	}
+
+	#newNote{
+		display: flex;
+		justify-content: center;
+		width: 100%;
+		height: fit-content;
+	}
+
+	.newpostit{
+		width: 598px;
+		white-space: 0px;
+		height: fit-content;
+		border-style: solid;
+		border-width: 1px;
 	}
 
 	#notecontainer{
 		display: flex;
 		flex-direction: row;
+		justify-content: center;
 		width: 100%;
 		height: 95vh;
 	}
 
 	.column{
 		display: flex;
+		margin: 5px;
 		flex-direction: column;
-		column-gap: 3vw;
-		width:20%;
+		width: 240px;
 		height: fit-content;
-		margin-right: 2vw;
 	}
 
 	.postit{
 		display: flex;
 		flex-direction: column;
-		width:100%;
-		height: 25vh;
-		margin-bottom: 2vh;
-		margin-right: 2vw;
+		margin-bottom: 5px;
+		width:240px;
+		height: fit-content;
 		border-style: solid;
 		border-radius: 10px;
 		border-width: 1px;
 	}
 	
 	.title{
+		display: flex;
+		flex-direction: column;
+		align-items: center;
 		resize: none;
 		overflow: clip;
 		width: 100%;
-		height: 20%;
+		height: fit-content;
 		border-top-left-radius: 15px;
 		border-top-right-radius: 15px;
 		border-top-width: 0px;
@@ -101,7 +158,7 @@
 		overflow: clip;
 		vertical-align: text-top;
 		width: 100%;
-		height: 80%;
+		height: fit-content;
 		border: none;
 		outline: none;
 		margin: 0px;
