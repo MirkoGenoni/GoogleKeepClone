@@ -102,8 +102,8 @@
 				<div id="newbodycontainer" class="textcontainer">
 					<textarea placeholder="Scrivi una nota..." id="newbody" class="body" bind:this={newpostBody} bind:value={bodyAdd} on:input={()=>dynamicResizeBody("body")} style={styleBody}></textarea>
 				</div>
-				<div id="noteAdd">
-					<button id="addnote" on:click={closeNote}>Chiudi</button>
+				<div id="closenotecontainer">
+					<button id="closenote" on:click={closeNote}>Chiudi</button>
 				</div>
 				{/if}
 			</div>
@@ -176,6 +176,9 @@
 		height: var(--height);
 		font-size: 16px;
 		color: rgba(0,0,0,0.702);
+		letter-spacing: 0.00625em;
+		font-weight: 500;
+		line-height: 1.5rem;
 	}
 	/*Container per dare padding alla textarea del body*/
 	#newbodycontainer{
@@ -191,13 +194,15 @@
 		font-size: 14px;
 		color: rgba(0,0,0,0.702);
 		font-weight: 500;
+		letter-spacing: 0.01785714em;
+		line-height: 1.25rem;
 	}
 
 	#newbody{
 		height: var(--height);
 		max-height: 340px;
 		overflow: auto;
-		color: black;
+		color: #202124;
 		font-size: 14px;
 		letter-spacing: .01428571em;
 		font-weight: 400;
@@ -209,7 +214,7 @@
 	
 	/*BOTTONE AGGIUNTA NOTA*/
 	/*Container tasto aggiunta nota*/
-	#noteAdd{
+	#closenotecontainer{
 		display: flex;
 		justify-content: center;
 		align-items: center;
@@ -218,9 +223,24 @@
 		height: fit-content;
 	}
 	/*Button aggiunta nota*/
-	#addnote{
+	#closenote{
+		background-color: white;
+		border: transparent;
+		height: 36px;
+		padding: 8px 24px;
+		border-radius: 4px;
 		margin-top: 2px;
 		margin-bottom: 2px;
+		font-size: 14px;
+		color: rgba(0,0,0,.87);
+		font-weight: 500;
+		line-height: 1.25rem;
+	}
+	#closenote:hover{
+		background-color: rgba(95,99,104,0.039);
+	}
+	#closenote:active{
+		background-color: rgba(95,99,104,0.161)!important;
 	}
 
 
