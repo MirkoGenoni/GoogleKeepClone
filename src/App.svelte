@@ -1,5 +1,8 @@
 <svelte:head>
 	<link href="//fonts.googleapis.com/css?family=Google+Sans:400,500&amp;subset=cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese" rel="stylesheet" nonce="">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
 </svelte:head>
 <script>
     import { tick } from "svelte";
@@ -92,21 +95,30 @@
 </script>
 
 <main>
-	<div id="page">
-		<div id="newNote">
-			<div class="newpostit" use:outsideClick on:outclick={addNote}>
+	<div id="newNote">
+		<div class="newpostit" use:outsideClick on:outclick={addNote}>
+			<div id="titlewithimage">
 				<div id="newtitlecontainer" class="textcontainer" on:click={setClick}>
 					<textarea placeholder={clicked===false ? "Scrivi una nota..." : "Titolo..."} id="newtitle" class="title" bind:this={newpostTitle} bind:value={titleAdd} on:input={()=>dynamicResizeBody("title")} style={styleTitle}></textarea>
 				</div>
-				{#if clicked}
-				<div id="newbodycontainer" class="textcontainer">
-					<textarea placeholder="Scrivi una nota..." id="newbody" class="body" bind:this={newpostBody} bind:value={bodyAdd} on:input={()=>dynamicResizeBody("body")} style={styleBody}></textarea>
-				</div>
-				<div id="closenotecontainer">
-					<button id="closenote" on:click={closeNote}>Chiudi</button>
+				{#if !clicked}
+				<div id="iconcontainer">
+					<span id="toolbarclosedimage" class="material-symbols-outlined">image</span>
 				</div>
 				{/if}
 			</div>
+			{#if clicked}
+				<div id="newbodycontainer" class="textcontainer">
+					<textarea placeholder="Scrivi una nota..." id="newbody" class="body" bind:this={newpostBody} bind:value={bodyAdd} on:input={()=>dynamicResizeBody("body")} style={styleBody}></textarea>
+				</div>
+				<div id="toolbarcontainer">
+					<div id="tools">
+						<span id="toolbaropenimage" class="material-symbols-outlined">image</span>
+						<span id="toolbaropenpalette" class="material-symbols-outlined">palette</span>
+					</div>
+					<button id="closenote" on:click={closeNote}>Chiudi</button>
+			</div>
+			{/if}
 		</div>
 	</div>
 	<div id="notecontainer">
@@ -162,8 +174,17 @@
 	}
 
 	/*TEXTAREA TITOLO*/
+	/*Barra titolo chiusa con icona imagine*/
+	#titlewithimage{
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content:space-between;
+	}
+
 	/*Container per dare padding alla textarea del titolo*/
 	#newtitlecontainer{
+		width: 80%;
 		display: flex;
 		height: auto;
 		padding-top: 10px;
@@ -179,7 +200,72 @@
 		letter-spacing: 0.00625em;
 		font-weight: 500;
 		line-height: 1.5rem;
+		max-height: 340px;
+		overflow: auto;
 	}
+
+	/*PROPRIETÀ GENERALI ICONE GOOGLE*/
+	.material-symbols-outlined{
+		user-select: none;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		border-radius: 100%;
+		opacity: 80%;
+	}
+	.material-symbols-outlined:hover{
+		background-color: rgba(95,99,104,0.157);
+	}
+
+	/*NEWNOTECHIUSA*/
+	/*Container icone barra titolo*/
+	#iconcontainer{
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		width: 20%;
+		height: 44px;
+	}
+	/*Icona immagine*/
+	#toolbarclosedimage{
+		width: 44px;
+		height: 44px;
+	}
+
+	/*NEWNOTE APERTA*/
+	/*Container barra inferiore newnote*/
+	#toolbarcontainer{
+		margin-top: 32px;
+		margin-left: 15px;
+		margin-right: 15px;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+	}
+
+	/*Container strumenti*/
+	#tools{
+		display: flex;
+		flex-direction: row;
+	}
+
+	/*Icona immagine*/
+	#toolbaropenimage{
+		margin-right: 8px;
+		margin-right: 8px;
+		width: 34px;
+		height: 34px;
+	}
+
+	/*Icona palette*/
+	#toolbaropenpalette{
+		margin-right: 8px;
+		margin-left: 8px;
+		width: 34px;
+		height: 34px;
+	}
+
+	/*TEXTAREA BODY*/
 	/*Container per dare padding alla textarea del body*/
 	#newbodycontainer{
 		display: flex;
@@ -189,7 +275,7 @@
 		padding-left: 15px;
 		padding-right: 15px;
 	}
-	/*Proprietà aggiuntive per body nuovo postit*/
+	/*Proprietà font placeholder body*/
 	#newbody::placeholder{
 		font-size: 14px;
 		color: rgba(0,0,0,0.702);
@@ -197,7 +283,7 @@
 		letter-spacing: 0.01785714em;
 		line-height: 1.25rem;
 	}
-
+	/*Proprietà aggiuntive per body nuovo postit*/
 	#newbody{
 		height: var(--height);
 		max-height: 340px;
@@ -212,17 +298,8 @@
 		margin: 0px;
 	}
 	
-	/*BOTTONE AGGIUNTA NOTA*/
-	/*Container tasto aggiunta nota*/
-	#closenotecontainer{
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		margin: 0px;
-		width: 100%;
-		height: fit-content;
-	}
-	/*Button aggiunta nota*/
+	/*BOTTONE CHIUDI NOTA*/
+	/*Button chiudi nota*/
 	#closenote{
 		background-color: white;
 		border: transparent;
