@@ -21,10 +21,10 @@
 	let postitid = 0;
 	let titleAdd="";
 	let bodyAdd="";
+	
 	let clicked = false;
 	let dimensionintBody;
 	let dimensionintTitle;
-
 	let styleBody = "--height: 20px";
 	let styleTitle = "--height: 24px";
 	let newpostTitle;
@@ -65,17 +65,22 @@
 	}
 
 	function addNote(){
+		if(bodyAdd!=="" || titleAdd!==""){
+			columncollect.forEach(clearColumnState);
+			allElements.unshift({id: postitid, title: titleAdd, body: bodyAdd});
+			allElements.forEach(populateColumns);
+			columncollect=columncollect;
+			postitid++;
+		}
 		clicked=false;
-		columncollect.forEach(clearColumnState);
-		allElements.unshift({id: postitid, title: titleAdd, body: bodyAdd});
-		allElements.forEach(populateColumns);
-		columncollect=columncollect;
-		postitid++;
 		newpostTitle.value="";
 		newpostBody.valute="";
 		titleAdd="";
 		bodyAdd="";
+		styleBody = "--height: 20px";
+		styleTitle = "--height: 24px";
 		console.log(columncollect)
+		
 	}
 
 	function outsideClick(node){
@@ -98,7 +103,7 @@
 	<div id="newNote">
 		<div class="newpostit" use:outsideClick on:outclick={addNote}>
 			<div id="titlewithimage">
-				<div id="newtitlecontainer" class="textcontainer" on:click={setClick}>
+				<div id="newtitlecontainer" class="textcontainer" style={"--width: " + (clicked===false ? "80%" : "100%")} on:click={setClick}>
 					<textarea placeholder={clicked===false ? "Scrivi una nota..." : "Titolo..."} id="newtitle" class="title" bind:this={newpostTitle} bind:value={titleAdd} on:input={()=>dynamicResizeBody("title")} style={styleTitle}></textarea>
 				</div>
 				{#if !clicked}
@@ -117,7 +122,7 @@
 						<span id="toolbaropenpalette" class="material-symbols-outlined">palette</span>
 					</div>
 					<button id="closenote" on:click={closeNote}>Chiudi</button>
-			</div>
+				</div>
 			{/if}
 		</div>
 	</div>
@@ -143,11 +148,6 @@
 		margin: 0px;
 		padding: 0px;
 		font-family: "Google Sans", Roboto, Arial, sans-serif;
-	}
-
-	/*container per tutta la pagina*/
-	#page{
-		width: 100%;
 	}
 
 	/*FORM NUOVA NOTA*/
@@ -184,7 +184,7 @@
 
 	/*Container per dare padding alla textarea del titolo*/
 	#newtitlecontainer{
-		width: 80%;
+		width: var(--width);
 		display: flex;
 		height: auto;
 		padding-top: 10px;
