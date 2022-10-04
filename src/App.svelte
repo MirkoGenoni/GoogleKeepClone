@@ -6,7 +6,9 @@
 </svelte:head>
 <script>
     import { tick } from "svelte";
-	
+    import BackgroundColor from "./BackgroundColor.svelte";
+	import Palette from "./BackgroundColor.svelte"
+
 	let firstcolumn=[]
 	let secondcolumn=[]
 	let thirdcolumn=[]
@@ -25,26 +27,58 @@
 	let clicked = false;
 	let dimensionintBody;
 	let dimensionintTitle;
-	let styleBody = "--height: 20px";
-	let styleTitle = "--height: 24px";
+	let styleBody = "--height: 20px;";
+	let styleTitle = "--height: 24px;";
 	let newpostTitle;
 	let newpostBody;
+
+	let isPalette = false;
+	let currentBackground ="--background-color: #ffffff";
+
+	const setBackground = (color) => {
+		currentBackground = "--background-color: "+ color;
+		console.log(currentBackground)
+	}
 
 	function setClick(){
 		clicked= true;
 	}
 
+	function setPalette(){
+		document.getElementById("start").addEventListener("click", handleout, true);
+		if(isPalette){
+			isPalette = false;
+		} else {
+			isPalette = true;
+		}
+	}
+
+	function handleout(event){
+		let nodes;
+		let array = [];
+		if(isPalette===true){
+			nodes = document.getElementById("optionscontainer").childNodes;
+			nodes.forEach((value)=>{array.push(value.id)})
+			array.push("nocoloricon");
+			console.log(array);
+		}
+		if(event.target.id!=="toolbaropenpalette" && event.target.id!=="optionscontainer" && !array.includes(event.target.id) && isPalette===true){
+			console.log(event.target)
+			isPalette=false;
+		}
+	}
+
 	async function dynamicResizeBody(props){
 		if(props=="body"){
-			styleBody = "--height: 0";
+			styleBody = "--height: 0;";
 			await tick();
 			dimensionintBody = newpostBody.scrollHeight;
-			styleBody= "--height: " + dimensionintBody.toString() + "px";
+			styleBody= "--height: " + dimensionintBody.toString() + "px;";
 		} else {
-			styleTitle = "--height: 0";
+			styleTitle = "--height: 0;";
 			await tick();
 			dimensionintTitle = newpostTitle.scrollHeight;
-			styleTitle= "--height: " + dimensionintTitle.toString() + "px";
+			styleTitle= "--height: " + dimensionintTitle.toString() + "px;";
 		}
 	}
 
@@ -62,6 +96,10 @@
 		newpostBody.valute="";
 		titleAdd="";
 		bodyAdd="";
+		styleBody = "--height: 20px;";
+		styleTitle = "--height: 24px;";
+		currentBackground ="--background-color: #ffffff";
+		isPalette=false;
 	}
 
 	function addNote(){
@@ -72,39 +110,42 @@
 			columncollect=columncollect;
 			postitid++;
 		}
+
 		clicked=false;
 		newpostTitle.value="";
 		newpostBody.valute="";
 		titleAdd="";
 		bodyAdd="";
-		styleBody = "--height: 20px";
-		styleTitle = "--height: 24px";
-		console.log(columncollect)
-		
+		styleBody = "--height: 20px;";
+		styleTitle = "--height: 24px;";
+		currentBackground ="--background-color: #ffffff";
+		isPalette=false;		
 	}
 
 	function outsideClick(node){
 		const handleClick = (event) => {
-			if (!node.contains(event.target) && clicked===true) {
+			if (!node.contains(event.target) && clicked===true && event.target.id!="toolbaropenpalette") {
 				node.dispatchEvent(new CustomEvent("outclick"));
 			}
 		};
 		
 		document.addEventListener("click", handleClick, true);
+
 		return {
 		destroy() {
 			document.removeEventListener("click", handleClick, true);
 			}
 		};
 	}
+
 </script>
 
 <main>
 	<div id="newNote">
-		<div class="newpostit" use:outsideClick on:outclick={addNote}>
+		<div id="start" class="newpostit" use:outsideClick on:outclick={addNote} style={currentBackground}>
 			<div id="titlewithimage">
 				<div id="newtitlecontainer" class="textcontainer" style={"--width: " + (clicked===false ? "80%" : "100%")} on:click={setClick}>
-					<textarea placeholder={clicked===false ? "Scrivi una nota..." : "Titolo..."} id="newtitle" class="title" bind:this={newpostTitle} bind:value={titleAdd} on:input={()=>dynamicResizeBody("title")} style={styleTitle}></textarea>
+					<textarea placeholder={clicked===false ? "Scrivi una nota..." : "Titolo..."} id="newtitle" class="title" bind:this={newpostTitle} bind:value={titleAdd} on:input={()=>dynamicResizeBody("title")} style={styleTitle+currentBackground}></textarea>
 				</div>
 				{#if !clicked}
 				<div id="iconcontainer">
@@ -114,14 +155,17 @@
 			</div>
 			{#if clicked}
 				<div id="newbodycontainer" class="textcontainer">
-					<textarea placeholder="Scrivi una nota..." id="newbody" class="body" bind:this={newpostBody} bind:value={bodyAdd} on:input={()=>dynamicResizeBody("body")} style={styleBody}></textarea>
+					<textarea placeholder="Scrivi una nota..." id="newbody" class="body" bind:this={newpostBody} bind:value={bodyAdd} on:input={()=>dynamicResizeBody("body")} style={styleBody+currentBackground}></textarea>
 				</div>
 				<div id="toolbarcontainer">
 					<div id="tools">
 						<span id="toolbaropenimage" class="material-symbols-outlined">image</span>
-						<span id="toolbaropenpalette" class="material-symbols-outlined">palette</span>
+						<span id="toolbaropenpalette" class="material-symbols-outlined" on:click={setPalette}>palette</span>
+						{#if isPalette}
+							<Palette setBackground={setBackground}/>
+						{/if}
 					</div>
-					<button id="closenote" on:click={closeNote}>Chiudi</button>
+					<button id="closenote" on:click={closeNote} style={currentBackground}>Chiudi</button>
 				</div>
 			{/if}
 		</div>
@@ -170,7 +214,8 @@
 		box-shadow: 0 1px 2px 0 rgb(60 64 67 / 30%), 0 2px 6px 2px rgb(60 64 67 / 15%);
 		border: solid 1px transparent;
 		border-radius: 8px;
-		border-color: #e0e0e0;
+		border-color: var(--background-color);
+		background-color: var(--background-color);
 	}
 
 	/*TEXTAREA TITOLO*/
@@ -195,6 +240,7 @@
 	/*Proprietà aggiuntive per titolo nuovo postit*/
 	#newtitle{
 		height: var(--height);
+		background-color: var(--background-color);
 		font-size: 16px;
 		color: rgba(0,0,0,0.702);
 		letter-spacing: 0.00625em;
@@ -235,6 +281,7 @@
 	/*NEWNOTE APERTA*/
 	/*Container barra inferiore newnote*/
 	#toolbarcontainer{
+		position: relative;
 		margin-top: 32px;
 		margin-left: 15px;
 		margin-right: 15px;
@@ -286,6 +333,7 @@
 	/*Proprietà aggiuntive per body nuovo postit*/
 	#newbody{
 		height: var(--height);
+		background-color: var(--background-color);
 		max-height: 340px;
 		overflow: auto;
 		color: #202124;
@@ -312,6 +360,7 @@
 		color: rgba(0,0,0,.87);
 		font-weight: 500;
 		line-height: 1.25rem;
+		background-color: var(--background-color);
 	}
 	#closenote:hover{
 		background-color: rgba(95,99,104,0.039);
