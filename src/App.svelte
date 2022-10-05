@@ -6,7 +6,6 @@
 </svelte:head>
 <script>
     import { tick } from "svelte";
-    import BackgroundColor from "./BackgroundColor.svelte";
 	import Palette from "./BackgroundColor.svelte"
 
 	let firstcolumn=[]
@@ -33,10 +32,24 @@
 	let newpostBody;
 
 	let isPalette = false;
-	let currentBackground ="--background-color: #ffffff";
+	let currentBackground ="--background-color: #ffffff;";
 
+	let image;
+	let submitimage;
+	let isImage = false;
+
+	function setImage(e){
+		isImage=true;
+		let curr = e.target.files[0];
+		let reader = new FileReader();
+		reader.readAsDataURL(curr);
+		reader.onload = e => {
+			image = e.target.result;
+		}
+		clicked= true;
+	}
 	const setBackground = (color) => {
-		currentBackground = "--background-color: "+ color;
+		currentBackground = "--background-color: "+ color +";";
 		console.log(currentBackground)
 	}
 
@@ -45,7 +58,6 @@
 	}
 
 	function setPalette(){
-		document.getElementById("start").addEventListener("click", handleout, true);
 		if(isPalette){
 			isPalette = false;
 		} else {
@@ -98,8 +110,11 @@
 		bodyAdd="";
 		styleBody = "--height: 20px;";
 		styleTitle = "--height: 24px;";
-		currentBackground ="--background-color: #ffffff";
+		currentBackground ="--background-color: #ffffff;";
 		isPalette=false;
+		isImage=false;
+		image=""; 
+		submitimage.value="";
 	}
 
 	function addNote(){
@@ -111,15 +126,13 @@
 			postitid++;
 		}
 
-		clicked=false;
-		newpostTitle.value="";
-		newpostBody.valute="";
-		titleAdd="";
-		bodyAdd="";
-		styleBody = "--height: 20px;";
-		styleTitle = "--height: 24px;";
-		currentBackground ="--background-color: #ffffff";
-		isPalette=false;		
+		closeNote();
+	}
+
+	function deleteimage(){
+		isImage=false;
+		image="";
+		submitimage.value="";
 	}
 
 	function outsideClick(node){
@@ -142,24 +155,37 @@
 
 <main>
 	<div id="newNote">
-		<div id="start" class="newpostit" use:outsideClick on:outclick={addNote} style={currentBackground}>
+		<div id="start" class="newpostit" use:outsideClick on:outclick={addNote} on:click={(e)=> handleout(e)} style={currentBackground}>
+			<div id="titlebodyimage">
+			{#if isImage}
+				<div id="imagecontainer">
+					<img id="uploadedimage" src={image}/>
+					<div id="deleteimagecontainer">
+						<span id="deleteimage" class="material-symbols-outlined" on:click={deleteimage}>delete</span>
+					</div>
+				</div>
+			{/if}
 			<div id="titlewithimage">
+				<input style="display:none" type="file" accept=".jpg, .jpeg, .png" bind:this={submitimage} on:change={(e)=>{setImage(e);}}/>
 				<div id="newtitlecontainer" class="textcontainer" style={"--width: " + (clicked===false ? "80%" : "100%")} on:click={setClick}>
 					<textarea placeholder={clicked===false ? "Scrivi una nota..." : "Titolo..."} id="newtitle" class="title" bind:this={newpostTitle} bind:value={titleAdd} on:input={()=>dynamicResizeBody("title")} style={styleTitle+currentBackground}></textarea>
 				</div>
 				{#if !clicked}
-				<div id="iconcontainer">
+				<div id="iconcontainer" on:click={()=>{submitimage.click()}}>
 					<span id="toolbarclosedimage" class="material-symbols-outlined">image</span>
 				</div>
 				{/if}
 			</div>
 			{#if clicked}
 				<div id="newbodycontainer" class="textcontainer">
-					<textarea placeholder="Scrivi una nota..." id="newbody" class="body" bind:this={newpostBody} bind:value={bodyAdd} on:input={()=>dynamicResizeBody("body")} style={styleBody+currentBackground}></textarea>
+					<textarea placeholder="Scrivi una nota..." id="newbody" class="body" bind:this={newpostBody} bind:value={bodyAdd} on:input={()=>dynamicResizeBody("body")} style={styleBody+currentBackground + (isImage === true ? "--max-height: none" : "--max-height: 340px")}></textarea>
 				</div>
+			{/if}
+			</div>
+			{#if clicked}
 				<div id="toolbarcontainer">
 					<div id="tools">
-						<span id="toolbaropenimage" class="material-symbols-outlined">image</span>
+						<span id="toolbaropenimage" class="material-symbols-outlined" on:click={()=>{submitimage.click()}}>image</span>
 						<span id="toolbaropenpalette" class="material-symbols-outlined" on:click={setPalette}>palette</span>
 						{#if isPalette}
 							<Palette setBackground={setBackground}/>
@@ -201,8 +227,51 @@
 		justify-content: center;
 		width: 100%;
 		height: fit-content;
+		max-height: 800px;
 		margin-top: 32px;
 		margin-bottom: 16px;
+	}
+
+	/**/
+	#titlebodyimage{
+		height: fit-content;
+		max-height: 724px;
+		overflow: scroll;
+	}
+
+	#imagecontainer{
+		position: relative;
+		height: fit-content;
+		width: fit-content;
+	}
+
+	#imagecontainer:hover > #deleteimagecontainer{
+		opacity:40%;
+	}
+	#imagecontainer:hover > #deleteimagecontainer:hover{
+		opacity:100%;
+	}
+	/*Nuova immagine nella nota*/
+	#uploadedimage{
+		width: 100%;
+		height: 100%;
+	}
+
+	#deleteimage{
+		color:white;
+	}
+	#deleteimagecontainer{
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		position: absolute;
+		background-color: black;
+		width:34px;
+		height: 34px;
+		right: 15px;
+		bottom: 15px;
+		z-index: 2;
+		opacity: 0%;
 	}
 
 	/*Box nuova nota, contiene form per titolo e boty e tasto per confermare*/
@@ -282,7 +351,7 @@
 	/*Container barra inferiore newnote*/
 	#toolbarcontainer{
 		position: relative;
-		margin-top: 32px;
+		/*margin-top: 32px;*/
 		margin-left: 15px;
 		margin-right: 15px;
 		display: flex;
@@ -334,7 +403,7 @@
 	#newbody{
 		height: var(--height);
 		background-color: var(--background-color);
-		max-height: 340px;
+		max-height: var(--max-height);
 		overflow: auto;
 		color: #202124;
 		font-size: 14px;

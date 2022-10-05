@@ -22,8 +22,8 @@
 
 <article>
     <div id="optionscontainer">
-        <div id="nocolorcontainer">
-            <span id="nocoloricon" class="material-symbols-outlined" on:click={()=>setBackground("#ffffff")}>format_color_reset</span>
+        <div id="nocolorcontainer"  on:click={()=>setBackground("#ffffff")}>
+            <span id="nocoloricon" class="material-symbols-outlined">format_color_reset</span>
         </div>
         {#each colors as color}
             <div id={color.name} class="color" style={"--background-color:" + color.code} on:click={()=>setBackground(color.code)}></div>
