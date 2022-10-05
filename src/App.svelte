@@ -6,6 +6,7 @@
 </svelte:head>
 <script>
     import NewNote from "./NewNote.svelte"
+	import { afterUpdate } from 'svelte';
 
 	let firstcolumn=[]
 	let secondcolumn=[]
@@ -17,7 +18,6 @@
 		firstcolumn, secondcolumn, thirdcolumn, fourthcolumn, fifthcolumn, sixthcolumn
 	]
 	let allElements = [];
-	let bo = 0;
 
 	function clearColumnState(currentValue){
 		currentValue.length=0;
@@ -33,20 +33,49 @@
 		columncollect=columncollect;
 	}
 
+	const titles = [];
+	const bodies = [];
+
+	afterUpdate(async () => {
+		titles.forEach((title) => {
+			title.style = "height: 0px;"
+			if(title.value!==""){
+				console.log(title.value)
+				title.parentElement.style="height: fit-content;  padding: 12px 16px 12px 16px;"
+				title.style = "height: " + title.scrollHeight + "px;"
+			} 
+			if(title.value===""){
+				title.parentElement.style = "padding: 0px; height: 0px;"
+			}
+		});
+		bodies.forEach((body) => {
+			console.log(body.value)
+			body.style = "height: 0px;"
+			if(body.value!==""){
+				body.parentElement.style = "height: fit-content; padding: 12px 16px 12px 16px;"
+				body.style = "height: " + body.scrollHeight + "px;"
+			} 
+			if(body.value==="") {
+				body.parentElement.style = "padding: 0px; margin: 0px; height: 0px;"
+				body.style = "height: 0px; margin: 0px; padding: 0px;"
+			}
+		});
+	});
+
 </script>
 
 <main>
 	<NewNote {allElements} {addNote}/>
 	<div id="notecontainer">
-		{#each columncollect as column}
+		{#each columncollect as column, i}
 			<div class="column">
 				{#each column as postit}
 					<div class="postit">
-						<div class="textcontainer">
-							<textarea readonly id="postittitle" class="title" bind:value={postit.title}></textarea>
+						<div id={"titlecontainer" + i} class="textcontainer">
+							<textarea readonly class="titlepostit" bind:this={titles[i]} bind:value={postit.title}></textarea>
 						</div>
-						<div id="bodycontainer" class="textcontainer">
-							<textarea readonly id="postitbody" class="body" bind:value={postit.body}></textarea>
+						<div id={"bodycontainer" + i} class="textcontainer">
+							<textarea readonly class="bodypostit" bind:this={bodies[i]} bind:value={postit.body}></textarea>
 						</div>
 					</div>
 				{/each}
@@ -58,6 +87,7 @@
 <style>
 	
 	:global(body){
+		height: fit-content;
 		margin: 0px;
 		padding: 0px;
 		font-family: "Google Sans", Roboto, Arial, sans-serif;
@@ -76,7 +106,7 @@
 		margin: 5px;
 		flex-direction: column;
 		width: 240px;
-		height: fit-content;
+		height: max-content;
 	}
 
 	.postit{
@@ -92,14 +122,14 @@
 	}
 	
 	.textcontainer{
-		height: 48px;
+		height: fit-content;
 		padding-top: 12px;
 		padding-left: 16px;
 		padding-right: 16px;
 		padding-bottom: 0px;
 	}
 
-	.title{
+	.titlepostit{
 		color: #202124;
 		font-size: 15px;
 		color: black;
@@ -107,9 +137,10 @@
 		line-height: 1.5rem;
 		font-weight: 500;
 		resize: none;
-		overflow: hidden;
+		overflow: auto;
 		width: 100%;
-		height: 100%;
+		height: var(--height);
+		max-height: 72px;
 		padding: 0px;
 		outline: 0px;
 		margin: 0px;
@@ -121,28 +152,22 @@
 		padding-top: 0px;
 	}
 
-	.body{
+	.bodypostit{
 		font-size: 14px;
 		resize: none;
 		overflow: clip;
 		vertical-align: text-top;
 		width: 100%;
 		height: auto;
-		overflow: auto;
 		border: none;
 		outline: none;
 		margin: 0px;
-		margin-bottom: 1.5vh;
-		padding: 4px;
-		border-radius: 15px;
+		padding: 0px;
 		white-space: pre-wrap;
 	}
 
-	.body:focus{
+	.bodypostit:focus{
 		overflow: auto;
 	}
 
-	#postitbody{
-		user-select: none;
-	}
 </style>
