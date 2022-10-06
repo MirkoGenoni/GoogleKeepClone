@@ -52,7 +52,6 @@
 
 	const setBackground = (color) => {
 		currentBackground = "--background-color: "+ color +";";
-		console.log(currentBackground)
 	}
 
 	function setClick(){
@@ -68,7 +67,8 @@
 			array.push("nocoloricon");
 			console.log(array);
 		}
-		if(event.target.id!=="toolbaropenpalette" && event.target.id!=="optionscontainer" && !array.includes(event.target.id) && isPalette===true){
+		if(event.target.id!=="toolbaropenpalettenote" && event.target.id!=="optionscontainer" && !array.includes(event.target.id) && isPalette===true){
+			console.log("chiudo palette")
 			console.log(event.target)
 			isPalette=false;
 		}
@@ -100,12 +100,10 @@
             postitid++;
         }
         closeNote();
-        console.log(allElements)
         addNote();
     }
 
 	function outsideClick(node){
-        console.log("qui")
 		const handleClick = (event) => {
 			if (!node.contains(event.target) && clicked===true && event.target.id!="toolbaropenpalette") {
 				node.dispatchEvent(new CustomEvent("outclick"));
@@ -152,7 +150,7 @@
 			</div>
 			{#if clicked}
 				<div id="toolbarcontainer">
-					<Toolbar {isPalette} {setBackground} {submitimage} mini={false}/>
+					<Toolbar bind:isPalette={isPalette} {setBackground} {submitimage} mini={false}/>
 					<button id="closenote" on:click={closeNote} style={currentBackground}>Chiudi</button>
 				</div>
 			{/if}

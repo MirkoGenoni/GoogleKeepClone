@@ -34,11 +34,18 @@
 		columncollect=columncollect;
 	}
 
+	const fullpostit = [];
 	const titles = [];
 	const bodies = [];
 
 	afterUpdate(async () => {
 		titles.forEach((title, index) => {
+			/*fix to white note border color, the background is set to white but the border must be set to #e0e0e0*/
+			if(getComputedStyle(fullpostit[index]).getPropertyValue("background-color")!=="rgb(255, 255, 255)"){
+				fullpostit[index].style="border-color: " + getComputedStyle(fullpostit[index]).getPropertyValue("background-color") + ";" + "--background-color: " + getComputedStyle(fullpostit[index]).getPropertyValue("background-color") + ";"
+			} else {
+				fullpostit[index].style="border-color: #e0e0e0;" + "--background-color: " + getComputedStyle(fullpostit[index]).getPropertyValue("background-color") + ";"
+			}
 			title.style = "height: 0px;"
 			bodies[index].style = "height: 0px;"
 			if(title.value!=="" && bodies[index].value===""){
@@ -103,12 +110,12 @@
 		{#each columncollect as column, i}
 			<div class="column">
 				{#each column as postit}
-					<div class="postit" style={currentBackground}>
+					<div class="postit" bind:this={fullpostit[i]} style={postit.colorbkg}>
 						<div id={"titlecontainer" + i} class="textcontainer">
-							<textarea readonly class="titlepostit" bind:this={titles[i]} bind:value={postit.title} style={currentBackground}></textarea>
+							<textarea readonly class="titlepostit" bind:this={titles[i]} bind:value={postit.title} style={postit.colorbkg}></textarea>
 						</div>
 						<div id={"bodycontainer" + i} class="textcontainer">
-							<textarea readonly class="bodypostit" bind:this={bodies[i]} bind:value={postit.body} style={currentBackground}></textarea>
+							<textarea readonly class="bodypostit" bind:this={bodies[i]} bind:value={postit.body} style={postit.colorbkg}></textarea>
 						</div>
 						<div id="toolbarcontainer">
 							<Toolbar {isPalette} {setBackground} {submitimage} mini={true}/>
@@ -156,7 +163,7 @@
 		border: solid 1px transparent;
 		border-radius: 8px;
 		border-color: #e0e0e0;
-		background-color: var(--color);
+		background-color: var(--background-color);
 	}
 
 	.postit:hover{
@@ -191,7 +198,7 @@
 		margin: 0px;
 		border: none;
 		white-space: pre-wrap;
-		background-color: var(--color);
+		background-color: var(--background-color);
 	}
 
 	#bodycontainer{
@@ -216,7 +223,7 @@
 		padding: 0px;
 		white-space: pre-wrap;
 		user-select: none;
-		background-color: var(--color);
+		background-color: var(--background-color);
 	}
 
 	.bodypostit:focus{

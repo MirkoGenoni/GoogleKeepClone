@@ -4,9 +4,8 @@
     export let isPalette;
     export let setBackground;
     export let submitimage;
-
 	export let mini;
-
+	
     function setPalette(){
 		if(isPalette){
 			isPalette = false;
