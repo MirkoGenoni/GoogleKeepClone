@@ -216,7 +216,7 @@
 		overflow: clip;
 		vertical-align: text-top;
 		width: 100%;
-		max-height: 197px;
+		max-height: 199px;
 		border: none;
 		outline: none;
 		margin: 0px;
