@@ -7,6 +7,7 @@
 <script>
     import NewNote from "./NewNote.svelte"
 	import { afterUpdate } from 'svelte';
+	import Toolbar from "./Toolbar.svelte"
 
 	let firstcolumn=[]
 	let secondcolumn=[]
@@ -85,6 +86,15 @@
 		});
 	});
 
+	let isPalette = false;
+	let currentBackground ="--background-color: #e0e0e0;";
+
+	function submitimage(){
+
+	}
+	const setBackground = (color) => {
+		currentBackground = "--background-color: "+ color +";";
+	}
 </script>
 
 <main>
@@ -93,12 +103,15 @@
 		{#each columncollect as column, i}
 			<div class="column">
 				{#each column as postit}
-					<div class="postit">
+					<div class="postit" style={currentBackground}>
 						<div id={"titlecontainer" + i} class="textcontainer">
-							<textarea readonly class="titlepostit" bind:this={titles[i]} bind:value={postit.title}></textarea>
+							<textarea readonly class="titlepostit" bind:this={titles[i]} bind:value={postit.title} style={currentBackground}></textarea>
 						</div>
 						<div id={"bodycontainer" + i} class="textcontainer">
-							<textarea readonly class="bodypostit" bind:this={bodies[i]} bind:value={postit.body}></textarea>
+							<textarea readonly class="bodypostit" bind:this={bodies[i]} bind:value={postit.body} style={currentBackground}></textarea>
+						</div>
+						<div id="toolbarcontainer">
+							<Toolbar {isPalette} {setBackground} {submitimage} mini={true}/>
 						</div>
 					</div>
 				{/each}
@@ -133,6 +146,7 @@
 	}
 
 	.postit{
+		position:relative;
 		display: flex;
 		flex-direction: column;
 		position: relative;
@@ -142,8 +156,17 @@
 		border: solid 1px transparent;
 		border-radius: 8px;
 		border-color: #e0e0e0;
+		background-color: var(--color);
+	}
+
+	.postit:hover{
+		box-shadow: 0 1px 2px 0 rgb(60 64 67 / 30%), 0 1px 3px 1px rgb(60 64 67 / 15%);
 	}
 	
+	.postit:hover > #toolbarcontainer{
+		opacity: 100%;
+	}
+
 	.textcontainer{
 		height: fit-content;
 		padding-top: 12px;
@@ -153,6 +176,7 @@
 	}
 
 	.titlepostit{
+		cursor: default;
 		color: #202124;
 		font-size: 16px;
 		letter-spacing: .00625em;
@@ -167,6 +191,7 @@
 		margin: 0px;
 		border: none;
 		white-space: pre-wrap;
+		background-color: var(--color);
 	}
 
 	#bodycontainer{
@@ -174,6 +199,7 @@
 	}
 
 	.bodypostit{
+		cursor: default;
 		color: #202124;
 		font-size: 14px;
 		letter-spacing: .01428571em;
@@ -189,10 +215,23 @@
 		margin: 0px;
 		padding: 0px;
 		white-space: pre-wrap;
+		user-select: none;
+		background-color: var(--color);
 	}
 
 	.bodypostit:focus{
 		overflow: auto;
 	}
 
+	#toolbarcontainer{
+		position: absolute;
+		bottom : 0px;
+		width: 210px;
+		margin-left: 15px;
+		margin-right: 15px;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-around;
+		opacity: 0%;
+	}
 </style>

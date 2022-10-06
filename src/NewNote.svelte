@@ -1,6 +1,6 @@
 <script>
     import { tick } from "svelte";
-	import Palette from "./BackgroundColor.svelte"
+	import Toolbar from "./Toolbar.svelte"
 
     let postitid = 0;
     let bodyAdd = "";
@@ -59,14 +59,6 @@
 		clicked= true;
 	}
 
-	function setPalette(){
-		if(isPalette){
-			isPalette = false;
-		} else {
-			isPalette = true;
-		}
-	}
-
 	function handleout(event){
 		let nodes;
 		let array = [];
@@ -104,7 +96,7 @@
 
     function propagateContent(){
         if(bodyAdd!="" || titleAdd!=""){
-            allElements.unshift({id: postitid, title: titleAdd, body: bodyAdd});
+            allElements.unshift({id: postitid, title: titleAdd, body: bodyAdd, colorbkg: currentBackground});
             postitid++;
         }
         closeNote();
@@ -160,13 +152,7 @@
 			</div>
 			{#if clicked}
 				<div id="toolbarcontainer">
-					<div id="tools">
-						<span id="toolbaropenimage" class="material-symbols-outlined" on:click={()=>{submitimage.click()}}>image</span>
-						<span id="toolbaropenpalette" class="material-symbols-outlined" on:click={setPalette}>palette</span>
-						{#if isPalette}
-							<Palette setBackground={setBackground}/>
-						{/if}
-					</div>
+					<Toolbar {isPalette} {setBackground} {submitimage} mini={false}/>
 					<button id="closenote" on:click={closeNote} style={currentBackground}>Chiudi</button>
 				</div>
 			{/if}
@@ -315,34 +301,11 @@
 	/*Container barra inferiore newnote*/
 	#toolbarcontainer{
 		position: relative;
-		/*margin-top: 32px;*/
 		margin-left: 15px;
 		margin-right: 15px;
 		display: flex;
 		flex-direction: row;
 		justify-content: space-between;
-	}
-
-	/*Container strumenti*/
-	#tools{
-		display: flex;
-		flex-direction: row;
-	}
-
-	/*Icona immagine*/
-	#toolbaropenimage{
-		margin-right: 8px;
-		margin-right: 8px;
-		width: 34px;
-		height: 34px;
-	}
-
-	/*Icona palette*/
-	#toolbaropenpalette{
-		margin-right: 8px;
-		margin-left: 8px;
-		width: 34px;
-		height: 34px;
 	}
 
 	/*TEXTAREA BODY*/
