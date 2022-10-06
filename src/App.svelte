@@ -80,7 +80,7 @@
 				title.style = "height: " + title.scrollHeight + "px; max-height: 138px;"
 
 				bodies[index].parentElement.style = "height: 54px; padding: 5px 16px 12px 16px;"
-				bodies[index].style = "height: 54px;"
+				bodies[index].style = "height: 60px;"
 			}
 		});
 	});
@@ -154,8 +154,7 @@
 
 	.titlepostit{
 		color: #202124;
-		font-size: 15px;
-		color: black;
+		font-size: 16px;
 		letter-spacing: .00625em;
 		line-height: 1.5rem;
 		font-weight: 500;
@@ -175,7 +174,11 @@
 	}
 
 	.bodypostit{
+		color: #202124;
 		font-size: 14px;
+		letter-spacing: .01428571em;
+		line-height: 1.25rem;
+		font-weight: 400;
 		resize: none;
 		overflow: clip;
 		vertical-align: text-top;
