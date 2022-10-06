@@ -37,27 +37,50 @@
 	const bodies = [];
 
 	afterUpdate(async () => {
-		titles.forEach((title) => {
+		titles.forEach((title, index) => {
 			title.style = "height: 0px;"
-			if(title.value!==""){
+			bodies[index].style = "height: 0px;"
+			if(title.value!=="" && bodies[index].value===""){
 				console.log(title.value)
 				title.parentElement.style="height: fit-content;  padding: 12px 16px 12px 16px;"
 				title.style = "height: " + title.scrollHeight + "px;"
+
+				bodies[index].parentElement.style = "padding: 0px; margin: 0px; height: 0px;"
+				bodies[index].style = "height: 0px; margin: 0px; padding: 0px;"
 			} 
-			if(title.value===""){
+
+			if(bodies[index].value!=="" && title.value==="") {
+				bodies[index].parentElement.style = "height: fit-content; padding: 12px 16px 12px 16px;"
+				bodies[index].style = "height: " + bodies[index].scrollHeight + "px;"
+
 				title.parentElement.style = "padding: 0px; height: 0px;"
+
 			}
-		});
-		bodies.forEach((body) => {
-			console.log(body.value)
-			body.style = "height: 0px;"
-			if(body.value!==""){
-				body.parentElement.style = "height: fit-content; padding: 12px 16px 12px 16px;"
-				body.style = "height: " + body.scrollHeight + "px;"
-			} 
-			if(body.value==="") {
-				body.parentElement.style = "padding: 0px; margin: 0px; height: 0px;"
-				body.style = "height: 0px; margin: 0px; padding: 0px;"
+			
+			if(title.value!=="" && bodies[index].value!=="" && title.scrollHeight+bodies[index].scrollHeight<193){
+				title.parentElement.style="height: fit-content;  padding: 12px 16px 5px 16px;"
+				title.style = "height: " + title.scrollHeight + "px;"
+
+				bodies[index].parentElement.style = "height: fit-content; padding: 5px 16px 12px 16px;"
+				bodies[index].style = "height: " + bodies[index].scrollHeight + "px;"
+			}
+
+			if(title.value!=="" && bodies[index].value!=="" && title.scrollHeight+bodies[index].scrollHeight>193
+			   && title.scrollHeight<=bodies[index].scrollHeight){
+				title.parentElement.style="height: 48px;  padding: 12px 16px 5px 16px;"
+				title.style = "height: 48px;"
+
+				bodies[index].parentElement.style = "height: fit-content; max-height: 144px; padding: 5px 16px 12px 16px;"
+				bodies[index].style = "height: " + bodies[index].scrollHeight + "px; max-height: 144px;"
+			}
+
+			if(title.value!=="" && bodies[index].value!=="" && title.scrollHeight+bodies[index].scrollHeight>193
+			   && title.scrollHeight>bodies[index].scrollHeight){
+				title.parentElement.style="height: fit-content; max-height: 138px; padding: 12px 16px 5px 16px;"
+				title.style = "height: " + title.scrollHeight + "px; max-height: 138px;"
+
+				bodies[index].parentElement.style = "height: 54px; padding: 5px 16px 12px 16px;"
+				bodies[index].style = "height: 54px;"
 			}
 		});
 	});
@@ -114,8 +137,8 @@
 		flex-direction: column;
 		position: relative;
 		margin-bottom: 5px;
-		width:240px;
-		height: fit-content;
+		width: 240px;
+		height: 260px;
 		border: solid 1px transparent;
 		border-radius: 8px;
 		border-color: #e0e0e0;
@@ -137,10 +160,9 @@
 		line-height: 1.5rem;
 		font-weight: 500;
 		resize: none;
-		overflow: auto;
+		overflow: clip;
 		width: 100%;
-		height: var(--height);
-		max-height: 72px;
+		max-height: 197px;
 		padding: 0px;
 		outline: 0px;
 		margin: 0px;
@@ -158,7 +180,7 @@
 		overflow: clip;
 		vertical-align: text-top;
 		width: 100%;
-		height: auto;
+		max-height: 197px;
 		border: none;
 		outline: none;
 		margin: 0px;
