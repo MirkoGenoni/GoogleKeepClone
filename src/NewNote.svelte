@@ -20,7 +20,7 @@
 	let isPalette = false;
 	let currentBackground ="--background-color: #ffffff;";
 
-	let image;
+	let image = "";
 	let submitimage;
 	let isImage = false;
 
@@ -31,6 +31,13 @@
 		reader.readAsDataURL(curr);
 		reader.onload = e => {
 			image = e.target.result;
+		}
+		reader.onabort = e => {
+			image = "";
+		}
+
+		reader.onerror = e => {
+			image = "";
 		}
 		clicked= true;
 	}
@@ -95,8 +102,8 @@
 	}
 
     function propagateContent(){
-        if(bodyAdd!="" || titleAdd!=""){
-            allElements.unshift({id: postitid, title: titleAdd, body: bodyAdd, colorbkg: currentBackground});
+        if(bodyAdd!="" || titleAdd!="" || image!=""){
+            allElements.unshift({id: postitid, title: titleAdd, body: bodyAdd, colorbkg: currentBackground, image: image});
             postitid++;
         }
         closeNote();

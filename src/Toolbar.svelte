@@ -22,7 +22,7 @@
 		<span id="toolbaropenpalettenote" class="material-symbols-outlined" style={mini===true ? "font-size: 16px" : "font-size: 24px"}>delete</span>
 	{/if}
     {#if isPalette}
-        <Palette setBackground={setBackground}/>
+        <Palette setBackground={setBackground} {mini}/>
     {/if}
 </div>
 
@@ -34,7 +34,7 @@
 
 	/*Icona immagine*/
 	#toolbaropenimagenote{
-		margin-right: 8px;
+		margin-left: 8px;
 		margin-right: 8px;
 		width: 34px;
 		height: 34px;

@@ -4,6 +4,7 @@
 
 <script>
     export let setBackground;
+    export let mini = false;
 
     const colors = [
         {id:"1", name:"red", code: "#f28b82"},
@@ -21,7 +22,7 @@
 </script>
 
 <article>
-    <div id="optionscontainer">
+    <div id="optionscontainer" style={mini ? "left: -130px" : "left:40px"}>
         <div id="nocolorcontainer"  on:click={()=>setBackground("#ffffff")}>
             <span id="nocoloricon" class="material-symbols-outlined">format_color_reset</span>
         </div>
