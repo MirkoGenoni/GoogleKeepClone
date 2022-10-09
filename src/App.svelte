@@ -65,7 +65,7 @@
 				bodies[index].style = "height: 0px; margin: 0px; padding: 0px;"
 			}
 
-			if((title.value!=="" && bodies[index].value==="") || ((title.value!=="" && bodies[index].value!=="")) && !imageclass.includes("noimage")){
+			if(((title.value!=="" && bodies[index].value==="") || ((title.value!=="" && bodies[index].value!==""))) && !imageclass.includes("noimage")){
 				imagescontainer[index].style="height:154px;";
 				images[index].style = "border-top-left-radius: 8px; border-top-right-radius:8px;";
 
