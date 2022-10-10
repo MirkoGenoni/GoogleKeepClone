@@ -181,7 +181,7 @@
 	#titlebodyimage{
 		height: fit-content;
 		max-height: 724px;
-		overflow: scroll;
+		overflow: auto;
         border-top-right-radius: 8px;
         border-top-left-radius: 8px;
     }
