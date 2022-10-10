@@ -4,13 +4,20 @@
     export let isPalette;
     export let setBackground;
     export let submitimage;
+	export let deleteNote;
 	export let mini;
+	export let i;
+	export let setNotePalette;
 	
     function setPalette(){
 		if(isPalette){
 			isPalette = false;
 		} else {
 			isPalette = true;
+		}
+
+		if(mini){
+			setNotePalette(i);
 		}
 	}
 </script>
@@ -19,10 +26,10 @@
     <span id="toolbaropenimagenote" class="material-symbols-outlined" on:click={()=>{submitimage.click()}} style={mini===true ? "font-size: 16px" : "font-size: 24px"}>image</span>
     <span id="toolbaropenpalettenote" class="material-symbols-outlined" on:click={setPalette} style={mini===true ? "font-size: 16px" : "font-size: 24px"}>palette</span>
 	{#if mini}
-		<span id="toolbaropenpalettenote" class="material-symbols-outlined" style={mini===true ? "font-size: 16px" : "font-size: 24px"}>delete</span>
+		<span id="toolbaropenpalettenote" class="material-symbols-outlined" on:click={()=>{deleteNote(i);}} style={mini===true ? "font-size: 16px" : "font-size: 24px"}>delete</span>
 	{/if}
     {#if isPalette}
-        <Palette setBackground={setBackground} {mini}/>
+        <Palette setBackground={setBackground} {mini} {i}/>
     {/if}
 </div>
 

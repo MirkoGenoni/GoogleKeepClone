@@ -6,42 +6,42 @@
 </svelte:head>
 <script>
     import NewNote from "./NewNote.svelte"
+	import { onMount } from 'svelte';
 	import { afterUpdate } from 'svelte';
+	import {tick} from 'svelte';
 	import Toolbar from "./Toolbar.svelte"
-
-	let firstcolumn=[]
-	let secondcolumn=[]
-	let thirdcolumn=[]
-	let fourthcolumn=[]
-	let fifthcolumn=[]
-	let sixthcolumn = []
-	let columncollect=[
-		firstcolumn, secondcolumn, thirdcolumn, fourthcolumn, fifthcolumn, sixthcolumn
-	]
 	let allElements = [];
 
-	function clearColumnState(currentValue){
-		currentValue.length=0;
-	}
-
-	function populateColumns(currentValue, index){
-		columncollect[index%6].push(currentValue);
-	}
 
 	function addNote(){
-		columncollect.forEach(clearColumnState);
-		allElements.forEach(populateColumns);
-		columncollect=columncollect;
+		allElements=allElements;
 	}
 
-	const fullpostit = [];
+	let i=0;
+
+	let fullpostit = [];
 	let imagescontainer = [];
-	let images = {};
-	const titles = [];
-	const bodies = [];
+	let images = [];
+	let titles = [];
+	let bodies = [];
+	let toolbars=[];
+	let wall;
+	let width;
+	let margins;
+
+	onMount(async () => {
+		calculateDimension();
+	});
+
+	function calculateDimension() {
+		width = Math.trunc(window.outerWidth / 252)*252-10;
+		margins = (window.outerWidth - width) / 2;
+		wall.style="--width: " + width + "px; --margin-left: " + margins + "px; --margin-right: " + margins + "px;";
+	}
 
 	afterUpdate(async () => {
-		titles.forEach((title, index) => {
+		allElements.forEach((element, index) => {
+			if(titles[index]!==null || images[index]!==null || bodies[index]!== null){
 			/*fix to white note border color, the background is set to white but the border must be set to #e0e0e0*/
 			let backgroundCol = getComputedStyle(fullpostit[index]).getPropertyValue("background-color");
 			if(backgroundCol!=="rgb(255, 255, 255)"){
@@ -50,122 +50,143 @@
 				fullpostit[index].style="border-color: #e0e0e0;" + "--background-color: " + backgroundCol + ";"
 			}
 
-			title.style = "height: 0px;"
+			titles[index].style = "height: 0px;"
 			bodies[index].style = "height: 0px;"
 			images[index].style = "height: 0px;"
 			let imageclass = new String(images[index].getAttribute("class"));
 
-			if(title.value==="" && bodies[index].value==="" && !imageclass.includes("noimage")){
+			if(titles[index].value==="" && bodies[index].value==="" && !imageclass.includes("noimage")){
 				imagescontainer[index].style="height:100%;";
 				images[index].style = "border-radius: 8px;"
 
-				title.parentElement.style = "padding: 0px; height: 0px;"
+				titles[index].parentElement.style = "padding: 0px; height: 0px;"
 
 				bodies[index].parentElement.style = "padding: 0px; margin: 0px; height: 0px;"
 				bodies[index].style = "height: 0px; margin: 0px; padding: 0px;"
 			}
 
-			if(((title.value!=="" && bodies[index].value==="") || ((title.value!=="" && bodies[index].value!==""))) && !imageclass.includes("noimage")){
+			if(((titles[index].value!=="" && bodies[index].value==="") || ((titles[index].value!=="" && bodies[index].value!==""))) && !imageclass.includes("noimage")){
 				imagescontainer[index].style="height:154px;";
 				images[index].style = "border-top-left-radius: 8px; border-top-right-radius:8px;";
 
-				title.parentElement.style="height: fit-content;  padding: 12px 16px 12px 16px;"
-				title.style = "height: " + title.scrollHeight + "px;  max-height: 48px;"
+				titles[index].parentElement.style="height: fit-content;  padding: 12px 16px 12px 16px;"
+				titles[index].style = "height: " + titles[index].scrollHeight + "px;  max-height: 48px;"
 
 				bodies[index].parentElement.style = "padding: 0px; margin: 0px; height: 0px;"
 				bodies[index].style = "height: 0px; margin: 0px; padding: 0px;"
 			}
 
-			if((title.value==="" && bodies[index].value!=="") && !imageclass.includes("noimage")){
+			if((titles[index].value==="" && bodies[index].value!=="") && !imageclass.includes("noimage")){
 				imagescontainer[index].style="height:154px;";
 				images[index].style = "border-top-left-radius: 8px; border-top-right-radius:8px;";
 
 				bodies[index].parentElement.style = "height: fit-content; padding: 12px 16px 12px 16px;"
 				bodies[index].style = "height: " + bodies[index].scrollHeight + "px; max-height: 60px;"
 
-				title.parentElement.style = "padding: 0px; height: 0px;"
+				titles[index].parentElement.style = "padding: 0px; height: 0px;"
 			}
 
-			if(title.value!=="" && bodies[index].value==="" && imageclass.includes("noimage")){
-				title.parentElement.style="height: fit-content;  padding: 12px 16px 12px 16px;"
-				title.style = "height: " + title.scrollHeight + "px;"
+			if(titles[index].value!=="" && bodies[index].value==="" && imageclass.includes("noimage")){
+				titles[index].parentElement.style="height: fit-content;  padding: 12px 16px 12px 16px;"
+				titles[index].style = "height: " + titles[index].scrollHeight + "px;"
 
 				bodies[index].parentElement.style = "padding: 0px; margin: 0px; height: 0px;"
 				bodies[index].style = "height: 0px; margin: 0px; padding: 0px;"
 			} 
 
-			if(bodies[index].value!=="" && title.value==="" && imageclass.includes("noimage")) {
+			if(bodies[index].value!=="" && titles[index].value==="" && imageclass.includes("noimage")) {
 				bodies[index].parentElement.style = "height: fit-content; padding: 12px 16px 12px 16px;"
 				bodies[index].style = "height: " + bodies[index].scrollHeight + "px;"
 
-				title.parentElement.style = "padding: 0px; height: 0px;"
+				titles[index].parentElement.style = "padding: 0px; height: 0px;"
 
 			}
 			
-			if(title.value!=="" && bodies[index].value!=="" && title.scrollHeight+bodies[index].scrollHeight<193 && imageclass.includes("noimage")){
-				title.parentElement.style="height: fit-content;  padding: 12px 16px 5px 16px;"
-				title.style = "height: " + title.scrollHeight + "px;"
+			if(titles[index].value!=="" && bodies[index].value!=="" && titles[index].scrollHeight+bodies[index].scrollHeight<193 && imageclass.includes("noimage")){
+				titles[index].parentElement.style="height: fit-content;  padding: 12px 16px 5px 16px;"
+				titles[index].style = "height: " + titles[index].scrollHeight + "px;"
 
 				bodies[index].parentElement.style = "height: fit-content; padding: 5px 16px 12px 16px;"
 				bodies[index].style = "height: " + bodies[index].scrollHeight + "px;"
 			}
 
-			if(title.value!=="" && bodies[index].value!=="" && title.scrollHeight+bodies[index].scrollHeight>193
-			   && title.scrollHeight<=bodies[index].scrollHeight && imageclass.includes("noimage")){
-				title.parentElement.style="height: 48px;  padding: 12px 16px 5px 16px;"
-				title.style = "height: 48px;"
+			if(titles[index].value!=="" && bodies[index].value!=="" && titles[index].scrollHeight+bodies[index].scrollHeight>193
+			   && titles[index].scrollHeight<=bodies[index].scrollHeight && imageclass.includes("noimage")){
+				titles[index].parentElement.style="height: 48px;  padding: 12px 16px 5px 16px;"
+				titles[index].style = "height: 48px;"
 
 				bodies[index].parentElement.style = "height: fit-content; max-height: 144px; padding: 5px 16px 12px 16px;"
 				bodies[index].style = "height: " + bodies[index].scrollHeight + "px; max-height: 144px;"
 			}
 
-			if(title.value!=="" && bodies[index].value!=="" && title.scrollHeight+bodies[index].scrollHeight>193
-			   && title.scrollHeight>bodies[index].scrollHeight && imageclass.includes("noimage")){
-				title.parentElement.style="height: fit-content; max-height: 138px; padding: 12px 16px 5px 16px;"
-				title.style = "height: " + title.scrollHeight + "px; max-height: 138px;"
+			if(titles[index].value!=="" && bodies[index].value!=="" && titles[index].scrollHeight+bodies[index].scrollHeight>193
+			   && titles[index].scrollHeight>bodies[index].scrollHeight && imageclass.includes("noimage")){
+				titles[index].parentElement.style="height: fit-content; max-height: 138px; padding: 12px 16px 5px 16px;"
+				titles[index].style = "height: " + titles[index].scrollHeight + "px; max-height: 138px;"
 
 				bodies[index].parentElement.style = "height: 54px; padding: 5px 16px 12px 16px;"
 				bodies[index].style = "height: 60px;"
 			}
+		}
 		});
 	});
-
-	let isPalette = false;
-	let currentBackground ="--background-color: #e0e0e0;";
 
 	function submitimage(){
 
 	}
-	const setBackground = (color) => {
-		currentBackground = "--background-color: "+ color +";";
+
+	const setBackground = (i, color) => {
+		allElements[i].colorbkg= "--background-color: "+ color +";";
 	}
+
+	const deleteNote = (i) => {
+		allElements.splice(i, 1);
+
+		console.log(allElements)
+		allElements=allElements;
+	}
+
+	const setNotePalette = (i) => {
+		allElements[i].isPalette===true ? allElements[i].isPalette=false : allElements[i].isPalette=true;
+	}
+
+	function handleout(event, i){
+		let nodes;
+		let array = [];
+		if(allElements[i].isPalette===true){
+			nodes = document.getElementById("optionscontainer").childNodes;
+			nodes.forEach((value)=>{array.push(value.id)})
+			array.push("nocoloricon");
+		}
+		if(event.target.id!=="toolbaropenpalettenote" && event.target.id!=="optionscontainer" && !array.includes(event.target.id) && allElements[i].isPalette===true){
+			allElements[i].isPalette=false;
+		}
+	}
+
 </script>
 
+<svelte:window on:resize={calculateDimension}></svelte:window>
 <main>
 	<NewNote {allElements} {addNote}/>
-	<div id="notecontainer">
-		{#each columncollect as column, i}
-			<div class="column">
-				{#each column as postit}
-					<div class="postit" bind:this={fullpostit[i]} style={postit.colorbkg}>
-						{#if postit.image!=""}
-							<div id={"image" + i} class="noteimagecontainer" bind:this={imagescontainer[i]}>
-								<img class="noteimage" bind:this={images[i]} src={postit.image} alt="note"/>
-							</div>
-						{:else}
-							<div class="noimage" bind:this={images[i]}></div>
-						{/if}
-						<div id={"titlecontainer" + i} class="textcontainer">
-							<textarea readonly class="titlepostit" bind:this={titles[i]} bind:value={postit.title} style={postit.colorbkg}></textarea>
-						</div>
-						<div id={"bodycontainer" + i} class="textcontainer">
-							<textarea readonly class="bodypostit" bind:this={bodies[i]} bind:value={postit.body} style={postit.colorbkg}></textarea>
-						</div>
-						<div id="toolbarcontainer" style={postit.colorbkg}>
-							<Toolbar {isPalette} {setBackground} {submitimage} mini={true}/>
-						</div>
+	<div id="notecontainer" bind:this={wall}>	
+		{#each allElements as postit, i}
+			<div class="postit" bind:this={fullpostit[i]} style={postit.colorbkg} on:click={(e)=> handleout(e, i)}>
+				{#if postit.image!=""}
+					<div id={"image" + i} class="noteimagecontainer" bind:this={imagescontainer[i]}>
+						<img class="noteimage" bind:this={images[i]} src={postit.image} alt="note"/>
 					</div>
-				{/each}
+				{:else}
+					<div class="noimage" bind:this={images[i]}></div>
+				{/if}
+				<div id={"titlecontainer" + i} class="textcontainer">
+					<textarea readonly class="titlepostit" bind:this={titles[i]} bind:value={postit.title} style={postit.colorbkg}></textarea>
+				</div>
+				<div id={"bodycontainer" + i} class="textcontainer">
+					<textarea readonly class="bodypostit" bind:this={bodies[i]} bind:value={postit.body} style={postit.colorbkg}></textarea>
+				</div>
+				<div id="toolbarcontainer" bind:this={toolbars[i]} style={postit.colorbkg}>
+					<Toolbar {i} isPalette={postit.isPalette} {deleteNote} {setBackground} {submitimage} {setNotePalette} mini={true}/>
+				</div>
 			</div>
 		{/each}
 	</div>
@@ -187,17 +208,13 @@
 	#notecontainer{
 		display: flex;
 		flex-direction: row;
-		justify-content: center;
-		width: 100%;
+		flex-wrap: wrap;
+		justify-content: flex-start;
+		width: var(--width);
+		margin-left: var(--margin-right);
+		margin-right: var(--margin-left);
+		gap:10px;
 		height: fit-content;
-	}
-
-	.column{
-		display: flex;
-		margin: 5px;
-		flex-direction: column;
-		width: 240px;
-		height: max-content;
 	}
 
 	.postit{

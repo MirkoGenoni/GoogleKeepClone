@@ -5,6 +5,7 @@
 <script>
     export let setBackground;
     export let mini = false;
+    export let i;
 
     const colors = [
         {id:"1", name:"red", code: "#f28b82"},
@@ -23,11 +24,11 @@
 
 <article>
     <div id="optionscontainer" style={mini ? "left: -130px" : "left:40px"}>
-        <div id="nocolorcontainer"  on:click={()=>setBackground("#ffffff")}>
+        <div id="nocolorcontainer"  on:click={()=>setBackground(i, "#ffffff")}>
             <span id="nocoloricon" class="material-symbols-outlined">format_color_reset</span>
         </div>
         {#each colors as color}
-            <div id={color.name} class="color" style={"--background-color:" + color.code} on:click={()=>setBackground(color.code)}></div>
+            <div id={color.name} class="color" style={"--background-color:" + color.code} on:click={()=>setBackground(i, color.code)}></div>
         {/each}
     </div>
 </article>

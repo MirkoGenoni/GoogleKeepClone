@@ -2,6 +2,7 @@
     import { tick } from "svelte";
 	import Toolbar from "./Toolbar.svelte"
 
+	const i = 0;
     let postitid = 0;
     let bodyAdd = "";
     let titleAdd= "";
@@ -57,7 +58,7 @@
 		submitimage.value="";
 	}
 
-	const setBackground = (color) => {
+	const setBackground = (i, color) => {
 		currentBackground = "--background-color: "+ color +";";
 	}
 
@@ -72,11 +73,8 @@
 			nodes = document.getElementById("optionscontainer").childNodes;
 			nodes.forEach((value)=>{array.push(value.id)})
 			array.push("nocoloricon");
-			console.log(array);
 		}
 		if(event.target.id!=="toolbaropenpalettenote" && event.target.id!=="optionscontainer" && !array.includes(event.target.id) && isPalette===true){
-			console.log("chiudo palette")
-			console.log(event.target)
 			isPalette=false;
 		}
 	}
@@ -103,7 +101,7 @@
 
     function propagateContent(){
         if(bodyAdd!="" || titleAdd!="" || image!=""){
-            allElements.unshift({id: postitid, title: titleAdd, body: bodyAdd, colorbkg: currentBackground, image: image});
+            allElements.unshift({id: postitid, title: titleAdd, body: bodyAdd, colorbkg: currentBackground, image: image, isPalette: false});
             postitid++;
         }
         closeNote();
@@ -125,6 +123,9 @@
 			}
 		};
 	}
+
+	function deleteNote(){}
+	function setNotePalette(){}
 </script>
 
     <div id="newNote">
@@ -157,7 +158,7 @@
 			</div>
 			{#if clicked}
 				<div id="toolbarcontainer">
-					<Toolbar bind:isPalette={isPalette} {setBackground} {submitimage} mini={false}/>
+					<Toolbar bind:isPalette={isPalette} setNotePalette={setNotePalette} {setBackground} {deleteNote} {submitimage} mini={false} {i}/>
 					<button id="closenote" on:click={closeNote} style={currentBackground}>Chiudi</button>
 				</div>
 			{/if}
