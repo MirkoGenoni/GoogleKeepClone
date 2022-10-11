@@ -69,7 +69,7 @@
 				imagescontainer[index].style="height:154px;";
 				images[index].style = "border-top-left-radius: 8px; border-top-right-radius:8px;";
 
-				titles[index].parentElement.style="height: fit-content;  padding: 12px 16px 12px 16px;"
+				titles[index].parentElement.style="height: fit-content;  padding: 12px 16px 12px 16px; max-height: 48px;"
 				titles[index].style = "height: " + titles[index].scrollHeight + "px;  max-height: 48px;"
 
 				bodies[index].parentElement.style = "padding: 0px; margin: 0px; height: 0px;"
@@ -80,14 +80,14 @@
 				imagescontainer[index].style="height:154px;";
 				images[index].style = "border-top-left-radius: 8px; border-top-right-radius:8px;";
 
-				bodies[index].parentElement.style = "height: fit-content; padding: 12px 16px 12px 16px;"
-				bodies[index].style = "height: " + bodies[index].scrollHeight + "px; max-height: 60px;"
+				bodies[index].parentElement.style = "height: fit-content; padding: 12px 16px 12px 16px; max-height: 40px"
+				bodies[index].style = "height: " + bodies[index].scrollHeight + "px; max-height: 40px;"
 
 				titles[index].parentElement.style = "padding: 0px; height: 0px;"
 			}
 
 			if(titles[index].value!=="" && bodies[index].value==="" && imageclass.includes("noimage")){
-				titles[index].parentElement.style="height: fit-content;  padding: 12px 16px 12px 16px;"
+				titles[index].parentElement.style="height: fit-content;  padding: 12px 16px 12px 16px; max-height: 197px;"
 				titles[index].style = "height: " + titles[index].scrollHeight + "px;"
 
 				bodies[index].parentElement.style = "padding: 0px; margin: 0px; height: 0px;"
@@ -95,7 +95,7 @@
 			} 
 
 			if(bodies[index].value!=="" && titles[index].value==="" && imageclass.includes("noimage")) {
-				bodies[index].parentElement.style = "height: fit-content; padding: 12px 16px 12px 16px;"
+				bodies[index].parentElement.style = "height: fit-content; padding: 12px 16px 12px 16px; max-height: 199px;"
 				bodies[index].style = "height: " + bodies[index].scrollHeight + "px;"
 
 				titles[index].parentElement.style = "padding: 0px; height: 0px;"
