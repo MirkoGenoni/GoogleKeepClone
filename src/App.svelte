@@ -279,10 +279,10 @@
 					<div draggable="false" class="noimage" bind:this={images[i]}></div>
 				{/if}
 				<div draggable="false" id={"titlecontainer" + i} class="textcontainer">
-					<textarea readonly class="titlepostit" bind:this={titles[i]} bind:value={postit.title} style={postit.colorbkg}></textarea>
+					<textarea disabled class="titlepostit" bind:this={titles[i]} bind:value={postit.title} on:touchstart|preventDefault={()=>{}} style={postit.colorbkg}></textarea>
 				</div>
 				<div draggable="false" id={"bodycontainer" + i} class="textcontainer">
-					<textarea draggable="false" readonly class="bodypostit" bind:this={bodies[i]} bind:value={postit.body} style={postit.colorbkg}></textarea>
+					<textarea disabled draggable="false" class="bodypostit" bind:this={bodies[i]} bind:value={postit.body} style={postit.colorbkg}></textarea>
 				</div>
 				<div draggable="false" class="toolbarcontainer" id={"toolbarcontainer" + i} bind:this={toolbars[i]} style={postit.colorbkg}>
 					<Toolbar {i} isPalette={postit.isPalette} {deleteNote} {setBackground} submitimage={submitimage[i]} {setNotePalette} mini={true}/>
@@ -384,6 +384,7 @@
 		border: none;
 		white-space: pre-wrap;
 		background-color: var(--background-color);
+		pointer-events: none;
 	}
 
 	#bodycontainer{
@@ -409,6 +410,7 @@
 		white-space: pre-wrap;
 		user-select: none;
 		background-color: var(--background-color);
+		pointer-events: none;
 	}
 
 	.bodypostit:focus{
