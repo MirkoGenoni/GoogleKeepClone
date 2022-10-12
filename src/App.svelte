@@ -6,10 +6,12 @@
 </svelte:head>
 <script>
     import NewNote from "./NewNote.svelte"
+	import NoteOpened from "./NoteOpened.svelte"
 	import { onMount } from 'svelte';
 	import { afterUpdate } from 'svelte';
 	import {tick} from 'svelte';
 	import Toolbar from "./Toolbar.svelte"
+	
 	let allElements = [];
 
 
@@ -34,6 +36,8 @@
 	let currentdragover=null;
 	let dragfix = null;
 
+	let currentopened;
+	let isOpen = false;
 	onMount(async () => {
 		calculateDimension();
 	});
@@ -160,7 +164,6 @@
 				toolbars[dragfix].style.opacity="0%";
 			} else if(dragfix!=null) {
 				toolbars[dragfix].style.opacity="";
-				console.log(document.getElementsByClassName("postit"));
 				dragfix=null;
 			}
 		}
@@ -172,6 +175,7 @@
 	}
 
 	const deleteNote = (i) => {
+		if(isOpen){ isOpen = false }
 		allElements.splice(i, 1);
 		allElements=allElements;
 	}
@@ -212,7 +216,6 @@
 
 	function postitdragstart(e, i){
 		if(currentdragging==null){
-			console.log("qui");
 			draggingstyle = getComputedStyle(e.target);
 			currentdragging = i;
 			e.target.style.opacity="0%";
@@ -248,15 +251,25 @@
 		}
 	}
 	function dragover(e){}
+
+	function openNote(e, i){
+		console.log("note opened");
+		currentopened = i;
+		isOpen = true;
+	}
+
 </script>
 
 <svelte:window on:resize={calculateDimension}></svelte:window>
 <svelte:body  on:dragend={()=>{walldragend()}} on:dragover|preventDefault={(e)=>{dragover(e)}}></svelte:body>
 <main>
+	{#if isOpen}
+		<NoteOpened opened={allElements[currentopened]} bind:isOpen={isOpen} {setBackground} {deleteNote} {currentopened} {addNote}/>
+	{/if}
 	<NewNote {allElements} {addNote}/>
 	<div id="notecontainer" bind:this={wall}>	
 		{#each allElements as postit, i}
-			<div draggable="true" class="postit" id={"postit"+i} bind:this={fullpostit[i]} style={postit.colorbkg} on:mouseleave={(e)=> {handleout(e, i)}} on:mousedown={(e)=> {handleout(e, i)}} on:drag={(e)=>{postitdragstart(e, i);}} on:dragenter={(e)=>{dragenter(e, i)}} on:dragover|preventDefault={(e)=>{dragover(e)}}>
+			<div draggable="true" class="postit" id={"postit"+i} bind:this={fullpostit[i]} style={postit.colorbkg} on:mouseleave={(e)=> {handleout(e, i)}} on:mousedown={(e)=> {handleout(e, i)}} on:drag={(e)=>{postitdragstart(e, i);}} on:dragenter={(e)=>{dragenter(e, i)}} on:dragover|preventDefault={(e)=>{dragover(e)}} on:click={(e)=>{openNote(e,i)}}>
 				<input draggable="false" style="display:none" type="file" accept=".jpg, .jpeg, .png" bind:this={submitimage[i]} on:change={(e)=>{setImage(e, i);}}/>
 				{#if postit.image!=""}
 					<div draggable="false" id={"image" + i} class="noteimagecontainer" bind:this={imagescontainer[i]}>
