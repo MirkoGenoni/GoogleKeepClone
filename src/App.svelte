@@ -29,6 +29,11 @@
 
 	let submitimage = [];
 
+	let draggingstyle;
+	let currentdragging;
+	let currentdragover=null;
+	let dragfix = null;
+
 	onMount(async () => {
 		calculateDimension();
 	});
@@ -149,6 +154,15 @@
 				bodies[index].parentElement.style = "height: 54px; padding: 5px 16px 12px 16px;"
 				bodies[index].style = "height: 60px;"
 			}
+
+			if(currentdragging!=null){
+				fullpostit[currentdragging].style.opacity = "0%";
+				toolbars[dragfix].style.opacity="0%";
+			} else if(dragfix!=null) {
+				toolbars[dragfix].style.opacity="";
+				console.log(document.getElementsByClassName("postit"));
+				dragfix=null;
+			}
 		}
 		});
 	});
@@ -196,29 +210,68 @@
 
 	}
 
+	function postitdragstart(e, i){
+		if(currentdragging==null){
+			console.log("qui");
+			draggingstyle = getComputedStyle(e.target);
+			currentdragging = i;
+			e.target.style.opacity="0%";
+			dragfix = i;
+		}
+	}
+
+	function walldragend(){
+		fullpostit[currentdragging].style.opacity="100%";
+		currentdragover = null;
+		currentdragging = null;
+	}
+
+	async function dragenter(e, i){
+		for(let j=0; j++; j<5){
+			await tick();
+		}
+		if(i!=currentdragover && i!=currentdragging){
+			console.log("Dragging "+ currentdragging + " on " + i);
+			currentdragover=i;
+
+			if(currentdragging>i){
+				allElements.splice(i, 0, allElements[currentdragging]);
+				allElements.splice(currentdragging+1, 1);
+			} else {
+				allElements.splice(i+1, 0, allElements[currentdragging]);
+				allElements.splice(currentdragging, 1);
+			}
+
+			currentdragging = i;
+			currentdragover = null;
+			allElements = allElements;
+		}
+	}
+	function dragover(e){}
 </script>
 
 <svelte:window on:resize={calculateDimension}></svelte:window>
+<svelte:body  on:dragend={()=>{walldragend()}} on:dragover|preventDefault={(e)=>{dragover(e)}}></svelte:body>
 <main>
 	<NewNote {allElements} {addNote}/>
 	<div id="notecontainer" bind:this={wall}>	
 		{#each allElements as postit, i}
-			<div class="postit" bind:this={fullpostit[i]} style={postit.colorbkg} on:click={(e)=> handleout(e, i)}>
-				<input style="display:none" type="file" accept=".jpg, .jpeg, .png" bind:this={submitimage[i]} on:change={(e)=>{setImage(e, i);}}/>
+			<div draggable="true" class="postit" id={"postit"+i} bind:this={fullpostit[i]} style={postit.colorbkg} on:mouseleave={(e)=> {handleout(e, i)}} on:mousedown={(e)=> {handleout(e, i)}} on:drag={(e)=>{postitdragstart(e, i);}} on:dragenter={(e)=>{dragenter(e, i)}} on:dragover|preventDefault={(e)=>{dragover(e)}}>
+				<input draggable="false" style="display:none" type="file" accept=".jpg, .jpeg, .png" bind:this={submitimage[i]} on:change={(e)=>{setImage(e, i);}}/>
 				{#if postit.image!=""}
-					<div id={"image" + i} class="noteimagecontainer" bind:this={imagescontainer[i]}>
-						<img class="noteimage" bind:this={images[i]} src={postit.image} alt="note"/>
+					<div draggable="false" id={"image" + i} class="noteimagecontainer" bind:this={imagescontainer[i]}>
+						<img draggable="false" class="noteimage" bind:this={images[i]} src={postit.image} alt="note"/>
 					</div>
 				{:else}
-					<div class="noimage" bind:this={images[i]}></div>
+					<div draggable="false" class="noimage" bind:this={images[i]}></div>
 				{/if}
-				<div id={"titlecontainer" + i} class="textcontainer">
+				<div draggable="false" id={"titlecontainer" + i} class="textcontainer">
 					<textarea readonly class="titlepostit" bind:this={titles[i]} bind:value={postit.title} style={postit.colorbkg}></textarea>
 				</div>
-				<div id={"bodycontainer" + i} class="textcontainer">
-					<textarea readonly class="bodypostit" bind:this={bodies[i]} bind:value={postit.body} style={postit.colorbkg}></textarea>
+				<div draggable="false" id={"bodycontainer" + i} class="textcontainer">
+					<textarea draggable="false" readonly class="bodypostit" bind:this={bodies[i]} bind:value={postit.body} style={postit.colorbkg}></textarea>
 				</div>
-				<div id="toolbarcontainer" bind:this={toolbars[i]} style={postit.colorbkg}>
+				<div draggable="false" class="toolbarcontainer" id={"toolbarcontainer" + i} bind:this={toolbars[i]} style={postit.colorbkg}>
 					<Toolbar {i} isPalette={postit.isPalette} {deleteNote} {setBackground} submitimage={submitimage[i]} {setNotePalette} mini={true}/>
 				</div>
 			</div>
@@ -270,7 +323,7 @@
 		box-shadow: 0 1px 2px 0 rgb(60 64 67 / 30%), 0 1px 3px 1px rgb(60 64 67 / 15%);
 	}
 	
-	.postit:hover > #toolbarcontainer{
+	.postit:hover > .toolbarcontainer{
 		opacity: 100%;
 	}
 
@@ -349,7 +402,7 @@
 		overflow: auto;
 	}
 
-	#toolbarcontainer{
+	.toolbarcontainer{
 		position: absolute;
 		margin-bottom: 5px;
 		bottom : 0px;
