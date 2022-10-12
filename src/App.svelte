@@ -34,9 +34,31 @@
 	});
 
 	function calculateDimension() {
-		width = Math.trunc(window.outerWidth / 252)*252-10;
-		margins = (window.outerWidth - width) / 2;
-		wall.style="--width: " + width + "px; --margin-left: " + margins + "px; --margin-right: " + margins + "px;";
+		if(window.innerWidth>1738){
+			width = 6*252-10;
+			margins = (window.innerWidth - width) / 2;
+			wall.style="--width: " + width + "px; --margin-left: " + margins + "px; --margin-right: " + margins + "px;";
+		} else if(window.innerWidth>1486){
+			width = 5*252-10;
+			margins = (window.innerWidth - width) / 2;
+			wall.style="--width: " + width + "px; --margin-left: " + margins + "px; --margin-right: " + margins + "px;";
+		} else if(window.innerWidth>1234){
+			width = 4*252-10;
+			margins = (window.innerWidth - width) / 2;
+			wall.style="--width: " + width + "px; --margin-left: " + margins + "px; --margin-right: " + margins + "px;";
+		} else if(window.innerWidth>982){
+			width = 3*252-10;
+			margins = (window.innerWidth - width) / 2;
+			wall.style="--width: " + width + "px; --margin-left: " + margins + "px; --margin-right: " + margins + "px;";
+		} else if(window.innerWidth>730){
+			width = 2*252-10;
+			margins = (window.innerWidth - width) / 2;
+			wall.style="--width: " + width + "px; --margin-left: " + margins + "px; --margin-right: " + margins + "px;";
+		} else if(window.innerWidth>478){
+			width = 1*252-10;
+			margins = (window.innerWidth - width) / 2;
+			wall.style="--width: " + width + "px; --margin-left: " + margins + "px; --margin-right: " + margins + "px;";
+		}
 	}
 
 	afterUpdate(async () => {
@@ -205,7 +227,6 @@
 </main>
 
 <style>
-	
 	:global(body){
 		height: fit-content;
 		margin: 0px;
@@ -225,6 +246,7 @@
 		width: var(--width);
 		margin-left: var(--margin-right);
 		margin-right: var(--margin-left);
+		min-width: 478px;
 		gap:10px;
 		height: fit-content;
 	}
