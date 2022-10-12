@@ -17,8 +17,6 @@
 		allElements=allElements;
 	}
 
-	let i=0;
-
 	let fullpostit = [];
 	let imagescontainer = [];
 	let images = [];
@@ -28,6 +26,8 @@
 	let wall;
 	let width;
 	let margins;
+
+	let submitimage = [];
 
 	onMount(async () => {
 		calculateDimension();
@@ -131,18 +131,12 @@
 		});
 	});
 
-	function submitimage(){
-
-	}
-
 	const setBackground = (i, color) => {
 		allElements[i].colorbkg= "--background-color: "+ color +";";
 	}
 
 	const deleteNote = (i) => {
 		allElements.splice(i, 1);
-
-		console.log(allElements)
 		allElements=allElements;
 	}
 
@@ -163,6 +157,23 @@
 		}
 	}
 
+	function setImage(e, i){
+		let curr = e.target.files[0];
+		let reader = new FileReader();
+		reader.readAsDataURL(curr);
+		reader.onload = e => {
+			allElements[i].image = e.target.result;
+		}
+		reader.onabort = e => {
+			allElements[i].image = "";
+		}
+
+		reader.onerror = e => {
+			allElements[i].image = "";
+		}
+
+	}
+
 </script>
 
 <svelte:window on:resize={calculateDimension}></svelte:window>
@@ -171,6 +182,7 @@
 	<div id="notecontainer" bind:this={wall}>	
 		{#each allElements as postit, i}
 			<div class="postit" bind:this={fullpostit[i]} style={postit.colorbkg} on:click={(e)=> handleout(e, i)}>
+				<input style="display:none" type="file" accept=".jpg, .jpeg, .png" bind:this={submitimage[i]} on:change={(e)=>{setImage(e, i);}}/>
 				{#if postit.image!=""}
 					<div id={"image" + i} class="noteimagecontainer" bind:this={imagescontainer[i]}>
 						<img class="noteimage" bind:this={images[i]} src={postit.image} alt="note"/>
@@ -185,7 +197,7 @@
 					<textarea readonly class="bodypostit" bind:this={bodies[i]} bind:value={postit.body} style={postit.colorbkg}></textarea>
 				</div>
 				<div id="toolbarcontainer" bind:this={toolbars[i]} style={postit.colorbkg}>
-					<Toolbar {i} isPalette={postit.isPalette} {deleteNote} {setBackground} {submitimage} {setNotePalette} mini={true}/>
+					<Toolbar {i} isPalette={postit.isPalette} {deleteNote} {setBackground} submitimage={submitimage[i]} {setNotePalette} mini={true}/>
 				</div>
 			</div>
 		{/each}

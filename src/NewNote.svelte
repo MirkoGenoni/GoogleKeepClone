@@ -40,6 +40,7 @@
 		reader.onerror = e => {
 			image = "";
 		}
+
 		clicked= true;
 	}
 
