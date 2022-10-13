@@ -4,6 +4,7 @@
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
 </svelte:head>
+
 <script>
     import NewNote from "./NewNote.svelte"
 	import NoteOpened from "./NoteOpened.svelte"
@@ -40,6 +41,8 @@
 	let isOpen = false;
 	let clicked = false;
 
+	let boxShadow = [];
+
 	onMount(async () => {
 		calculateDimension();
 	});
@@ -73,15 +76,24 @@
 	}
 
 	afterUpdate(async () => {
+		console.log("after")
 		allElements.forEach((element, index) => {
 			if(titles[index]!==null || images[index]!==null || bodies[index]!== null){
 			/*fix to white note border color, the background is set to white but the border must be set to #e0e0e0*/
 			let backgroundCol = getComputedStyle(fullpostit[index]).getPropertyValue("background-color");
+			let tmppostitstyle="";
 			if(backgroundCol!=="rgb(255, 255, 255)"){
-				fullpostit[index].style="border-color: " + backgroundCol + ";" + "--background-color: " + backgroundCol + ";"
+				tmppostitstyle="border-color: " + backgroundCol + ";" + "--background-color: " + backgroundCol + ";"
 			} else {
-				fullpostit[index].style="border-color: #e0e0e0;" + "--background-color: " + backgroundCol + ";"
+				tmppostitstyle="border-color: #e0e0e0;" + "--background-color: " + backgroundCol + ";"
 			}
+			if(boxShadow[index]!=null && index!=currentdragging){
+				tmppostitstyle += boxShadow[index];
+			}
+			if(index==dragfix){
+				tmppostitstyle += "box-shadow: none";
+			}
+			fullpostit[index].style = tmppostitstyle;
 
 			titles[index].style = "height: 0px;"
 			bodies[index].style = "height: 0px;"
@@ -193,6 +205,7 @@
 	function handleout(event, i){
 		let nodes;
 		let array = [];
+		console.log(event.type)
 		if(allElements[i].isPalette===true){
 			nodes = document.getElementById("optionscontainer").childNodes;
 			nodes.forEach((value)=>{array.push(value.id)})
@@ -200,6 +213,10 @@
 		}
 		if(event.target.id!=="toolbaropenpalettenote" && event.target.id!=="optionscontainer" && !array.includes(event.target.id) && allElements[i].isPalette===true){
 			allElements[i].isPalette=false;
+		} 
+		if(event.type!="mousedown") {
+			boxShadow[i]=null;
+			fullpostit[i].style.opacity=1;
 		}
 	}
 
@@ -280,6 +297,12 @@
 		}
 	}
 
+	function boxshadow(e, i){
+		console.log("focussando")
+		boxShadow[i] = "box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);";
+		fullpostit[i].style.opacity=1;
+	}
+
 </script>
 
 <svelte:window on:resize={calculateDimension}></svelte:window>
@@ -291,7 +314,7 @@
 	<NewNote {allElements} {addNote}/>
 	<div id="notecontainer" bind:this={wall}>	
 		{#each allElements as postit, i}
-			<div draggable="true" class="postit" id={"postit"+i} bind:this={fullpostit[i]} style={postit.colorbkg} on:mouseleave={(e)=> {handleout(e, i)}} on:mousedown={(e)=> {handleout(e, i)}} on:drag={(e)=>{postitdragstart(e, i);}} on:dragenter={(e)=>{dragenter(e, i)}} on:dragover|preventDefault={(e)=>{dragover(e)}} on:click={(e)=>{openNote(e,i)}}>
+			<div draggable="true" class="postit" id={"postit"+i} bind:this={fullpostit[i]} style={postit.colorbkg} on:mouseenter={(e)=>{boxshadow(e,i)}} on:mouseleave={(e)=> {handleout(e, i)}} on:mousedown={(e)=> {handleout(e, i)}} on:drag={(e)=>{postitdragstart(e, i);}} on:dragenter={(e)=>{dragenter(e, i)}} on:dragover|preventDefault={(e)=>{dragover(e)}} on:click={(e)=>{openNote(e,i)}}>
 				<input draggable="false" id={"submitimage" + i} style="display:none" type="file" accept=".jpg, .jpeg, .png" bind:this={submitimage[i]} on:change={(e)=>{setImage(e, i);}}/>
 				{#if postit.image!=""}
 					<div draggable="false" id={"image" + i} class="noteimagecontainer" bind:this={imagescontainer[i]}>
@@ -354,9 +377,9 @@
 		background-color: var(--background-color);
 	}
 
-	.postit:hover{
+	/*.postit:hover{
 		box-shadow: 0 1px 2px 0 rgb(60 64 67 / 30%), 0 1px 3px 1px rgb(60 64 67 / 15%);
-	}
+	}*/
 	
 	.postit:hover > .toolbarcontainer{
 		opacity: 100%;
