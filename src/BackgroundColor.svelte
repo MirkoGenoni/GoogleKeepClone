@@ -22,16 +22,14 @@
     ]  
 </script>
 
-<article>
-    <div id="optionscontainer" style={mini ? "left: -130px" : "left:40px"}>
-        <div id="nocolorcontainer"  on:click={()=>setBackground(i, "#ffffff")}>
-            <span id="nocoloricon" class="material-symbols-outlined">format_color_reset</span>
-        </div>
-        {#each colors as color}
-            <div id={color.name} class="color" style={"--background-color:" + color.code} on:click={()=>setBackground(i, color.code)}></div>
-        {/each}
+<div id="optionscontainer" style={mini ? "left: -130px" : "left:40px"}>
+    <div id="nocolorcontainer"  on:click={()=>setBackground(i, "#ffffff")}>
+        <span id="nocoloricon" class="material-symbols-outlined">format_color_reset</span>
     </div>
-</article>
+    {#each colors as color}
+        <div id={color.name} class="color" style={"--background-color:" + color.code} on:click={()=>setBackground(i, color.code)}></div>
+    {/each}
+</div>
 
 <style>
     #optionscontainer{
@@ -53,6 +51,7 @@
     }
 
     .material-symbols-outlined{
+        cursor: default;
         display: flex;
         justify-content: center;
         align-items: center;

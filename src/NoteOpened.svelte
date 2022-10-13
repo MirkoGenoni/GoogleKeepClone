@@ -1,6 +1,7 @@
 <script>
     import Toolbar from "./Toolbar.svelte"
     import { tick } from "svelte"
+    import { afterUpdate } from "svelte";
     export let opened;
     export let isOpen;
     export let setBackground;
@@ -8,6 +9,7 @@
     export let currentopened;
     export let addNote;
 
+	let isPalette=false;
     let submitimage;
     let title;
     let body;
@@ -63,47 +65,91 @@
 
     }
 
+	afterUpdate(async ()=>{
+		title.style="--height: " + title.scrollHeight + "px;"
+		body.style="--height: " + body.scrollHeight + "px;"
+	})
+
+	function handleout(event){
+		let nodes;
+		let array = [];
+		if(isPalette===true){
+			nodes = document.getElementById("optionscontainer").childNodes;
+			nodes.forEach((value)=>{array.push(value.id)})
+			array.push("nocoloricon");
+		}
+		if(event.target.id!=="toolbaropenpalettenote" && event.target.id!=="optionscontainer" && !array.includes(event.target.id) && isPalette===true){
+			isPalette=false;
+		}
+	}
 </script>
 
-<div>
-    <div id="openednote" style={opened.colorbkg}>
-        {#if opened.image!==""}
-            <div id="imagecontainer">
-                <img id="uploadedimage" alt ="immagine caricata" src={opened.image}/>
-                <div id="deleteimagecontainer">
-                    <span id="deleteimage" class="material-symbols-outlined" on:click={deleteimage}>delete</span>
-                </div>
-            </div>
-        {/if}
-        <div id="titlewithimage">
-            <input style="display:none" type="file" accept=".jpg, .jpeg, .png" bind:this={submitimage} on:change={(e)=>{setImage(e);}}/>
-            <div id="newtitlecontainer" class="textcontainer" style={"--width: 100%"}>
-                <textarea placeholder="Titolo..." id="newtitle" class="title" bind:this={title} bind:value={opened.title} on:input={()=>dynamicResizeBody("title")} style={styleTitle+opened.colorbkg}></textarea>
-            </div>
-        </div>
-        <div id="newbodycontainer" class="textcontainer">
-            <textarea placeholder="Scrivi una nota..." id="newbody" class="body" bind:this={body} bind:value={opened.body} on:input={()=>dynamicResizeBody("body")} style={styleBody+opened.colorbkg}></textarea>
-        </div>
 
-        <div id="toolbarcontainer">
-            <Toolbar i={currentopened} isPalette={opened.isPalette} setNotePalette={setNotePalette} {setBackground} {deleteNote} {submitimage} mini={true}/>
-            <button id="closenote" on:click={closeNote} style={opened.colorbkg}>Chiudi</button>
-        </div>
-    </div>
-</div>
+	<div id="background">
+		<div id="openednote" style={opened.colorbkg} on:click={(e)=> handleout(e)} on:mouseleave={(e)=> handleout(e)}>
+			<div id="titleimagebody">
+				{#if opened.image!==""}
+					<div id="imagecontainer">
+						<img id="uploadedimage" alt ="immagine caricata" src={opened.image}/>
+						<div id="deleteimagecontainer">
+							<span id="deleteimage" class="material-symbols-outlined" on:click={deleteimage}>delete</span>
+						</div>
+					</div>
+				{/if}
+				<div id="titlewithimage">
+					<input style="display:none" type="file" accept=".jpg, .jpeg, .png" bind:this={submitimage} on:change={(e)=>{setImage(e);}}/>
+					<div id="newtitlecontainer" class="textcontainer" style={"--width: 100%"}>
+						<textarea placeholder="Titolo..." id="newtitle" class="title" bind:this={title} bind:value={opened.title} on:input={()=>dynamicResizeBody("title")} style={styleTitle+opened.colorbkg}></textarea>
+					</div>
+				</div>
+				<div id="newbodycontainer" class="textcontainer">
+					<textarea placeholder="Scrivi una nota..." id="newbody" class="body" bind:this={body} bind:value={opened.body} on:input={()=>dynamicResizeBody("body")} style={styleBody+opened.colorbkg}></textarea>
+				</div>
+			</div>
+			<div id="toolbarcontainer">
+				<Toolbar i={currentopened} bind:isPalette={isPalette} setNotePalette={setNotePalette} {setBackground} {deleteNote} {submitimage} mini={true}/>
+				<button id="closenote" on:click={closeNote} style={opened.colorbkg}>Chiudi</button>
+			</div>
+		</div>
+	</div>
+
 
 <style>
+	#background{
+		display: flex;
+		justify-content: center;
+		padding-top: 20vh;
+		padding-bottom: 20vh;
+		width: 100vw;
+		height: 60vh;
+		background-color: rgba(32, 33, 36, 0.6);
+		z-index: 2;
+		position: absolute;
+		top:0;
+		left:0;
+	}
     #openednote{
         position: absolute;
-        width:100%;
-        height:100%;
-        z-index: 2;
+        width:600px;
+        height: fit-content;
         background-color: var(--background-color);
+		border: solid 1px transparent;
+		border-radius: 8px;
+		border-color: var(--background-color);
+		opacity: 1;
+		z-index: 3;
     }
+	#titleimagebody{
+		width: 100%;
+		max-height: calc(60vh - 40px);
+		overflow: auto;
+		border-top-left-radius: 8px;
+		border-top-right-radius: 8px;
+	}
 	#imagecontainer{
 		position: relative;
-		height: fit-content;
-		width: fit-content;
+		height: 100%;
+		width: 100%;
 	}
 
 	#imagecontainer:hover > #deleteimagecontainer{
@@ -145,7 +191,7 @@
     #newtitlecontainer{
 		width: var(--width);
 		display: flex;
-		height: auto;
+		height: fit-content;
 		padding-top: 10px;
 		padding-bottom: 10px;
 		padding-left: 15px;
@@ -159,8 +205,7 @@
 		color: rgba(0,0,0,0.702);
 		letter-spacing: 0.00625em;
 		font-weight: 500;
-		line-height: 1.5rem;
-		max-height: 340px;
+		line-height: 1.5rem;		
 		overflow: auto;
         resize: none;
         border: none;

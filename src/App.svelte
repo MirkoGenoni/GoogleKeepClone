@@ -38,6 +38,8 @@
 
 	let currentopened;
 	let isOpen = false;
+	let clicked = false;
+
 	onMount(async () => {
 		calculateDimension();
 	});
@@ -166,6 +168,10 @@
 				toolbars[dragfix].style.opacity="";
 				dragfix=null;
 			}
+
+			if(isOpen==true){
+				fullpostit[currentopened].style.opacity = "0%";
+			}
 		}
 		});
 	});
@@ -252,10 +258,26 @@
 	}
 	function dragover(e){}
 
-	function openNote(e, i){
-		console.log("note opened");
-		currentopened = i;
-		isOpen = true;
+	function openNote(event, i){		
+		let nodes;
+		let array = [];
+
+		let id = "tools";
+		nodes=document.getElementById(id).childNodes
+		nodes.forEach((value)=>{array.push(value.id)})
+		array.push("tools");
+		array.push("submitimage"+i);
+
+		if(allElements[i].isPalette===true){
+			nodes = document.getElementById("optionscontainer").childNodes;
+			nodes.forEach((value)=>{array.push(value.id)})
+			array.push("nocoloricon");
+		}
+		if(event.target.id!=="toolbaropenpalettenote" && event.target.id!=="optionscontainer" && !array.includes(event.target.id) && clicked!=true){
+			console.log("note opened");
+			currentopened = i;
+			isOpen = true;
+		}
 	}
 
 </script>
@@ -270,7 +292,7 @@
 	<div id="notecontainer" bind:this={wall}>	
 		{#each allElements as postit, i}
 			<div draggable="true" class="postit" id={"postit"+i} bind:this={fullpostit[i]} style={postit.colorbkg} on:mouseleave={(e)=> {handleout(e, i)}} on:mousedown={(e)=> {handleout(e, i)}} on:drag={(e)=>{postitdragstart(e, i);}} on:dragenter={(e)=>{dragenter(e, i)}} on:dragover|preventDefault={(e)=>{dragover(e)}} on:click={(e)=>{openNote(e,i)}}>
-				<input draggable="false" style="display:none" type="file" accept=".jpg, .jpeg, .png" bind:this={submitimage[i]} on:change={(e)=>{setImage(e, i);}}/>
+				<input draggable="false" id={"submitimage" + i} style="display:none" type="file" accept=".jpg, .jpeg, .png" bind:this={submitimage[i]} on:change={(e)=>{setImage(e, i);}}/>
 				{#if postit.image!=""}
 					<div draggable="false" id={"image" + i} class="noteimagecontainer" bind:this={imagescontainer[i]}>
 						<img draggable="false" class="noteimage" bind:this={images[i]} src={postit.image} alt="note"/>
@@ -279,7 +301,7 @@
 					<div draggable="false" class="noimage" bind:this={images[i]}></div>
 				{/if}
 				<div draggable="false" id={"titlecontainer" + i} class="textcontainer">
-					<textarea disabled class="titlepostit" bind:this={titles[i]} bind:value={postit.title} on:touchstart|preventDefault={()=>{}} style={postit.colorbkg}></textarea>
+					<textarea disabled class="titlepostit" bind:this={titles[i]} bind:value={postit.title} style={postit.colorbkg}></textarea>
 				</div>
 				<div draggable="false" id={"bodycontainer" + i} class="textcontainer">
 					<textarea disabled draggable="false" class="bodypostit" bind:this={bodies[i]} bind:value={postit.body} style={postit.colorbkg}></textarea>

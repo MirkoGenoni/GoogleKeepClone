@@ -10,7 +10,7 @@
     export let allElements;
     export let addNote;
 
-    let clicked = false;
+	let clicked=false;
 	let dimensionintBody;
 	let dimensionintTitle;
 	let styleBody = "--height: 20px;";
@@ -111,7 +111,7 @@
 
 	function outsideClick(node){
 		const handleClick = (event) => {
-			if (!node.contains(event.target) && clicked===true && event.target.id!="toolbaropenpalette") {
+			if (!node.contains(event.target) && clicked===true && event.target.id!="toolbaropenpalette" && event.target.closest(".postit")==null && event.target.closest("#background")==null) {
 				node.dispatchEvent(new CustomEvent("outclick"));
 			}
 		};
@@ -130,7 +130,7 @@
 </script>
 
     <div id="newNote">
-		<div id="start" class="newpostit" use:outsideClick on:outclick={propagateContent} on:click={(e)=> handleout(e)} style={currentBackground}>
+		<div id="start" class="newpostit" use:outsideClick on:outclick={propagateContent} on:click={(e)=> handleout(e)} on:mouseleave={(e)=> handleout(e)} style={currentBackground}>
 			<div id="titlebodyimage">
 			{#if isImage}
 				<div id="imagecontainer">
@@ -143,7 +143,7 @@
 			<div id="titlewithimage">
 				<input style="display:none" type="file" accept=".jpg, .jpeg, .png" bind:this={submitimage} on:change={(e)=>{setImage(e);}}/>
 				<div id="newtitlecontainer" class="textcontainer" style={"--width: " + (clicked===false ? "80%" : "100%")} on:click={setClick}>
-					<textarea placeholder={clicked===false ? "Scrivi una nota..." : "Titolo..."} id="newtitle" class="title" bind:this={newpostTitle} bind:value={titleAdd} on:input={()=>dynamicResizeBody("title")} style={styleTitle+currentBackground}></textarea>
+					<textarea placeholder={clicked===false ? "Scrivi una nota..." : "Titolo..."} id="newtitle" class="title" bind:this={newpostTitle} bind:value={titleAdd} on:input={()=>dynamicResizeBody("title")} style={styleTitle+currentBackground + (isImage === true ? "--max-height: none" : "--max-height: 340px")}></textarea>
 				</div>
 				{#if !clicked}
 				<div id="iconcontainer" on:click={()=>{submitimage.click()}}>
@@ -175,7 +175,7 @@
 		width: 100%;
 		height: fit-content;
 		max-height: 800px;
-		margin-top: 32px;
+		padding-top: 32px;
 		margin-bottom: 16px;
 	}
 
@@ -264,7 +264,7 @@
 		letter-spacing: 0.00625em;
 		font-weight: 500;
 		line-height: 1.5rem;
-		max-height: 340px;
+		max-height: var(--max-height);
 		overflow: auto;
         resize: none;
         border: none;
