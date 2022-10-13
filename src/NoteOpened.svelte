@@ -10,18 +10,23 @@
     export let currentopened; /*Index of current element of allElements opened*/
     export let addNote; /*parent method necessary to update the page render*/
 
-	let isPalette=false;
-    let submitimage;
-    let title;
-    let body;
-    let dimensionintBody;
-    let dimensionintTitle;
+	let isPalette=false; /*boolean true if the palette for background is open*/
+    
+	let submitimage; /*element bind necessary to upload image*/
+    let title; /*element bind necessary to dinamically resize the textarea*/
+    let body; /*element bind necessary to dinamically resize the textarea*/
+    let dimensionintBody; /*variable that temporally stores the current size of the div, hidden part also*/
+    let dimensionintTitle; /*variable that temporally stores the current size of the div, hidden part also*/
 
-    let styleBody = "--height: 20px;";
-    let styleTitle = "--height: 24px;";
+    let styleBody = "--height: 20px;"; /*variable passed to the element that contains its style*/
+    let styleTitle = "--height: 24px;"; /*variable passed to the element that contains its style*/
 
-    let i;
+	/*PLACEHOLDER*/
+    let i; /*placeholder variable necessary to create Toolbar element*/
+	function setNotePalette(){} /*placeholder method necessary to create Toolbar element without warning*/
 
+	/*IMAGE HANDLING*/
+	/*function that stores and display the photo added to the postit directly inside allElements*/
     function setImage(e){
 		let curr = e.target.files[0];
 		let reader = new FileReader();
@@ -38,11 +43,14 @@
 		}
 	}
 
+	/*function that deletes the image inserted inside the postit*/
     function deleteimage(){
 		opened.image="";
 		submitimage.value="";
 	}
 
+	/*TETXTAREA HANDLING*/
+	/*Function that assign the right height of the textarea on input*/
     async function dynamicResizeBody(props){
 		if(props=="body"){
 			styleBody = "--height: 0;";
@@ -57,20 +65,29 @@
 		}
 	}
 
-    function closeNote(){
-        isOpen = false;
-        addNote();
-    }
-
-    function setNotePalette(){
-
-    }
-
+	/*function that run just after the render and it assign the right height to the textarea*/
 	afterUpdate(async ()=>{
 		title.style="--height: " + title.scrollHeight + "px;"
 		body.style="--height: " + body.scrollHeight + "px;"
 	})
 
+	/*NOTE CLOSURE HANDLING*/
+	/*function called by the button close that close the note visualization*/
+    function closeNote(){
+        isOpen = false;
+        addNote();
+    }
+
+	/*function called when there's a clicke on the background*/
+	function handleclosebyoutside(e){
+		/*this condition ensures that the click is not on any element of the post*/
+		if(e.target.closest("#openednote") == null){
+			closeNote();
+		}
+	}
+
+	/*PALETTE HANDLING*/
+	/*function that opens and closes the palette inside the toolbar*/
 	function handleout(event){
 		let nodes;
 		let array = [];
@@ -84,45 +101,40 @@
 		}
 	}
 
-	function handleclosebyoutside(e){
-		console.log(e.target.closest("#openednote"))
-		if(e.target.closest("#openednote") == null){
-			closeNote();
-		}
-	}
 </script>
 
 
-	<div id="background" on:click={(e)=>{handleclosebyoutside(e)}}>
-		<div id="openednote" style={opened.colorbkg} on:click={(e)=> handleout(e)} on:mouseleave={(e)=> handleout(e)}>
-			<div id="titleimagebody">
-				{#if opened.image!==""}
-					<div id="openedimagecontainer">
-						<img id="openeduploadedimage" alt ="immagine caricata" src={opened.image}/>
-						<div id="openeddeleteimagecontainer">
-							<span id="openeddeleteimage" class="material-symbols-outlined" on:click={deleteimage}>delete</span>
-						</div>
-					</div>
-				{/if}
-				<div id="titlewithimageform">
-					<input style="display:none" type="file" accept=".jpg, .jpeg, .png" bind:this={submitimage} on:change={(e)=>{setImage(e);}}/>
-					<div id="openedtitlecontainer" class="textcontainer" style={"--width: 100%"}>
-						<textarea placeholder="Titolo" id="openedtitle" class="title" bind:this={title} bind:value={opened.title} on:input={()=>dynamicResizeBody("title")} style={styleTitle+opened.colorbkg}></textarea>
+<div id="background" on:click={(e)=>{handleclosebyoutside(e)}}>
+	<div id="openednote" style={opened.colorbkg} on:click={(e)=> handleout(e)} on:mouseleave={(e)=> handleout(e)}>
+		<div id="titleimagebody">
+			{#if opened.image!==""}
+				<div id="openedimagecontainer">
+					<img id="openeduploadedimage" alt ="immagine caricata" src={opened.image}/>
+					<div id="openeddeleteimagecontainer">
+						<span id="openeddeleteimage" class="material-symbols-outlined" on:click={deleteimage}>delete</span>
 					</div>
 				</div>
-				<div id="openedbodycontainer" class="textcontainer">
-					<textarea placeholder="Nota" id="openedbody" class="body" bind:this={body} bind:value={opened.body} on:input={()=>dynamicResizeBody("body")} style={styleBody+opened.colorbkg}></textarea>
+			{/if}
+			<div id="titlewithimageform">
+				<input style="display:none" type="file" accept=".jpg, .jpeg, .png" bind:this={submitimage} on:change={(e)=>{setImage(e);}}/>
+				<div id="openedtitlecontainer" class="textcontainer" style={"--width: 100%"}>
+					<textarea placeholder="Titolo" id="openedtitle" class="title" bind:this={title} bind:value={opened.title} on:input={()=>dynamicResizeBody("title")} style={styleTitle+opened.colorbkg}></textarea>
 				</div>
 			</div>
-			<div id="toolbarcontainer">
-				<Toolbar i={currentopened} bind:isPalette={isPalette} setNotePalette={setNotePalette} {setBackground} {deleteNote} {submitimage} mini={true}/>
-				<button id="closenote" on:click={closeNote} style={opened.colorbkg}>Chiudi</button>
+			<div id="openedbodycontainer" class="textcontainer">
+				<textarea placeholder="Nota" id="openedbody" class="body" bind:this={body} bind:value={opened.body} on:input={()=>dynamicResizeBody("body")} style={styleBody+opened.colorbkg}></textarea>
 			</div>
 		</div>
+		<div id="toolbarcontainer">
+			<Toolbar i={currentopened} bind:isPalette={isPalette} setNotePalette={setNotePalette} {setBackground} {deleteNote} {submitimage} mini={true}/>
+			<button id="closenote" on:click={closeNote} style={opened.colorbkg}>Chiudi</button>
+		</div>
 	</div>
+</div>
 
 
 <style>
+	/*background of the opened note that covers all the window*/
 	#background{
 		display: flex;
 		justify-content: center;
@@ -136,6 +148,7 @@
 		top:0;
 		left:0;
 	}
+	/*container of all the element and containers inside the post, image, body, title*/
     #openednote{
         position: absolute;
         width:600px;
@@ -147,6 +160,9 @@
 		opacity: 1;
 		z-index: 3;
     }
+
+	/*container for image, title and body*/
+	/*limits the post dimension and make element scrollable if oversize (except for toolbar)*/
 	#titleimagebody{
 		width: 100%;
 		max-height: calc(60vh - 40px);
@@ -154,27 +170,31 @@
 		border-top-left-radius: 8px;
 		border-top-right-radius: 8px;
 	}
+
+	/*IMAGE CONTAINER*/
 	#openedimagecontainer{
 		position: relative;
 		height: 100%;
 		width: 100%;
 	}
 
+	/*makes half visible the delete button on image hover*/
 	#openedimagecontainer:hover > #openeddeleteimagecontainer{
 		opacity:40%;
 	}
+
+	/*makes full visible the delete button on image hover*/
 	#openedimagecontainer:hover > #openeddeleteimagecontainer:hover{
 		opacity:100%;
 	}
-	/*Nuova immagine nella nota*/
+
+	/*New image inside note*/
 	#openeduploadedimage{
 		width: 100%;
 		height: 100%;
 	}
 
-	#openeddeleteimage{
-		color:white;
-	}
+	/*Container for delete image symbol*/
 	#openeddeleteimagecontainer{
 		display: flex;
 		justify-content: center;
@@ -189,6 +209,12 @@
 		opacity: 0%;
 	}
 
+	/*bin symbol for image deletion*/
+	#openeddeleteimage{
+		color:white;
+	}
+
+	/*Container for invisible input file and image visualization*/
     #titlewithimageform{
 		display: flex;
 		flex-direction: row;
@@ -196,6 +222,8 @@
 		justify-content:space-between;
 	}
 
+	/*TITLE STYLE*/
+	/*title container*/
     #openedtitlecontainer{
 		width: var(--width);
 		display: flex;
@@ -205,7 +233,7 @@
 		padding-left: 15px;
 		padding-right: 15px;
 	}
-
+	/*title textarea*/
     #openedtitle{
 		height: var(--height);
 		background-color: var(--background-color);
@@ -225,15 +253,8 @@
 		white-space: pre-wrap;
 	}
 
-	.material-symbols-outlined{
-		user-select: none;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		border-radius: 100%;
-		opacity: 80%;
-	}
-
+	/*BODY STYLE*/
+	/*body container*/
     #openedbodycontainer{
 		display: flex;
 		height: fit-content;
@@ -242,7 +263,7 @@
 		padding-left: 16px;
 		padding-right: 16px;
 	}
-	/*Proprietà font placeholder body*/
+	/*placeholder font properties for body textarea*/
 	#openedbody::placeholder{
 		font-size: 14px;
 		color: rgba(0,0,0,0.702);
@@ -250,7 +271,7 @@
 		letter-spacing: 0.01785714em;
 		line-height: 1.25rem;
 	}
-	/*Proprietà aggiuntive per body nuovo postit*/
+	/*body textarea*/
 	#openedbody{
 		height: var(--height);
 		background-color: var(--background-color);
@@ -272,6 +293,17 @@
 		white-space: pre-wrap;
 	}
 
+	/*TOOLBAR HANDLING*/
+	/*container for all the tool icon and closure button*/
+	#toolbarcontainer{
+		position: relative;
+		margin-left: 15px;
+		margin-right: 15px;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+	}
+	/*close button style*/
     #closenote{
 		background-color: white;
 		border: transparent;
@@ -293,13 +325,14 @@
 		background-color: rgba(95,99,104,0.161)!important;
 	}
 
-    #toolbarcontainer{
-		position: relative;
-		margin-left: 15px;
-		margin-right: 15px;
+	/*style for imported google symbols*/
+	.material-symbols-outlined{
+		user-select: none;
 		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
+		justify-content: center;
+		align-items: center;
+		border-radius: 100%;
+		opacity: 80%;
 	}
 
 </style>
