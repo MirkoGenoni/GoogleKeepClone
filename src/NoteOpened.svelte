@@ -2,12 +2,13 @@
     import Toolbar from "./Toolbar.svelte"
     import { tick } from "svelte"
     import { afterUpdate } from "svelte";
-    export let opened;
-    export let isOpen;
-    export let setBackground;
-    export let deleteNote;
-    export let currentopened;
-    export let addNote;
+	
+    export let opened; /*allElement's element with all its properties*/
+    export let isOpen; /*true if the postit is open and opens the relative view*/
+    export let setBackground; /*parent method to set the background to the postit in allElements*/
+    export let deleteNote; /*parent method to delete the post inside allElements*/
+    export let currentopened; /*Index of current element of allElements opened*/
+    export let addNote; /*parent method necessary to update the page render*/
 
 	let isPalette=false;
     let submitimage;
@@ -82,28 +83,35 @@
 			isPalette=false;
 		}
 	}
+
+	function handleclosebyoutside(e){
+		console.log(e.target.closest("#openednote"))
+		if(e.target.closest("#openednote") == null){
+			closeNote();
+		}
+	}
 </script>
 
 
-	<div id="background">
+	<div id="background" on:click={(e)=>{handleclosebyoutside(e)}}>
 		<div id="openednote" style={opened.colorbkg} on:click={(e)=> handleout(e)} on:mouseleave={(e)=> handleout(e)}>
 			<div id="titleimagebody">
 				{#if opened.image!==""}
-					<div id="imagecontainer">
-						<img id="uploadedimage" alt ="immagine caricata" src={opened.image}/>
-						<div id="deleteimagecontainer">
-							<span id="deleteimage" class="material-symbols-outlined" on:click={deleteimage}>delete</span>
+					<div id="openedimagecontainer">
+						<img id="openeduploadedimage" alt ="immagine caricata" src={opened.image}/>
+						<div id="openeddeleteimagecontainer">
+							<span id="openeddeleteimage" class="material-symbols-outlined" on:click={deleteimage}>delete</span>
 						</div>
 					</div>
 				{/if}
-				<div id="titlewithimage">
+				<div id="titlewithimageform">
 					<input style="display:none" type="file" accept=".jpg, .jpeg, .png" bind:this={submitimage} on:change={(e)=>{setImage(e);}}/>
-					<div id="newtitlecontainer" class="textcontainer" style={"--width: 100%"}>
-						<textarea placeholder="Titolo..." id="newtitle" class="title" bind:this={title} bind:value={opened.title} on:input={()=>dynamicResizeBody("title")} style={styleTitle+opened.colorbkg}></textarea>
+					<div id="openedtitlecontainer" class="textcontainer" style={"--width: 100%"}>
+						<textarea placeholder="Titolo" id="openedtitle" class="title" bind:this={title} bind:value={opened.title} on:input={()=>dynamicResizeBody("title")} style={styleTitle+opened.colorbkg}></textarea>
 					</div>
 				</div>
-				<div id="newbodycontainer" class="textcontainer">
-					<textarea placeholder="Scrivi una nota..." id="newbody" class="body" bind:this={body} bind:value={opened.body} on:input={()=>dynamicResizeBody("body")} style={styleBody+opened.colorbkg}></textarea>
+				<div id="openedbodycontainer" class="textcontainer">
+					<textarea placeholder="Nota" id="openedbody" class="body" bind:this={body} bind:value={opened.body} on:input={()=>dynamicResizeBody("body")} style={styleBody+opened.colorbkg}></textarea>
 				</div>
 			</div>
 			<div id="toolbarcontainer">
@@ -146,28 +154,28 @@
 		border-top-left-radius: 8px;
 		border-top-right-radius: 8px;
 	}
-	#imagecontainer{
+	#openedimagecontainer{
 		position: relative;
 		height: 100%;
 		width: 100%;
 	}
 
-	#imagecontainer:hover > #deleteimagecontainer{
+	#openedimagecontainer:hover > #openeddeleteimagecontainer{
 		opacity:40%;
 	}
-	#imagecontainer:hover > #deleteimagecontainer:hover{
+	#openedimagecontainer:hover > #openeddeleteimagecontainer:hover{
 		opacity:100%;
 	}
 	/*Nuova immagine nella nota*/
-	#uploadedimage{
+	#openeduploadedimage{
 		width: 100%;
 		height: 100%;
 	}
 
-	#deleteimage{
+	#openeddeleteimage{
 		color:white;
 	}
-	#deleteimagecontainer{
+	#openeddeleteimagecontainer{
 		display: flex;
 		justify-content: center;
 		align-items: center;
@@ -181,31 +189,31 @@
 		opacity: 0%;
 	}
 
-    #titlewithimage{
+    #titlewithimageform{
 		display: flex;
 		flex-direction: row;
 		align-items: center;
 		justify-content:space-between;
 	}
 
-    #newtitlecontainer{
+    #openedtitlecontainer{
 		width: var(--width);
 		display: flex;
 		height: fit-content;
-		padding-top: 10px;
+		padding-top: 16px;
 		padding-bottom: 10px;
 		padding-left: 15px;
 		padding-right: 15px;
 	}
 
-    #newtitle{
+    #openedtitle{
 		height: var(--height);
 		background-color: var(--background-color);
-		font-size: 16px;
+		font-size: 22px;
 		color: rgba(0,0,0,0.702);
-		letter-spacing: 0.00625em;
-		font-weight: 500;
-		line-height: 1.5rem;		
+		letter-spacing: 0;
+		font-weight: 400;
+		line-height: 1.75rem;		
 		overflow: auto;
         resize: none;
         border: none;
@@ -226,16 +234,16 @@
 		opacity: 80%;
 	}
 
-    #newbodycontainer{
+    #openedbodycontainer{
 		display: flex;
 		height: fit-content;
 		padding-top: 12px;
 		padding-bottom: 12px;
-		padding-left: 15px;
-		padding-right: 15px;
+		padding-left: 16px;
+		padding-right: 16px;
 	}
 	/*Proprietà font placeholder body*/
-	#newbody::placeholder{
+	#openedbody::placeholder{
 		font-size: 14px;
 		color: rgba(0,0,0,0.702);
 		font-weight: 500;
@@ -243,16 +251,16 @@
 		line-height: 1.25rem;
 	}
 	/*Proprietà aggiuntive per body nuovo postit*/
-	#newbody{
+	#openedbody{
 		height: var(--height);
 		background-color: var(--background-color);
 		max-height: var(--max-height);
 		overflow: auto;
 		color: #202124;
-		font-size: 14px;
-		letter-spacing: .01428571em;
+		font-size: 16px;
+		letter-spacing: .00625em;
 		font-weight: 400;
-		line-height: 1.25rem;
+		line-height: 1.5rem;
 		padding: 0px;
 		border-radius: 0px;
 		margin: 0px;
