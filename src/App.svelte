@@ -20,6 +20,7 @@
 		allElements=allElements;
 	}
 
+	let postitid = 0;
 	let fullpostit = [];
 	let imagescontainer = [];
 	let images = [];
@@ -52,7 +53,9 @@
 		const datareceived = JSON.parse(string);
 		allElements.unshift({id: datareceived[0].id, title: datareceived[0].title, body: null, colorbkg: "--background-color: #aecbfa;", image: datareceived[0].url, isPalette: false});
 		allElements.unshift({id: datareceived[1].id, title: null, body: datareceived[1].title, colorbkg: "--background-color: #ffffff;", image: datareceived[1].url, isPalette: false});
-		allElements.unshift({id: datareceived[2].id, title: null, body: null, colorbkg: "--background-color: #f28b82;", image: datareceived[2].url, isPalette: false})
+		allElements.unshift({id: datareceived[2].id, title: null, body: null, colorbkg: "--background-color: #f28b82;", image: datareceived[2].url, isPalette: false});
+		allElements.unshift({id: datareceived[3].id, title: datareceived[3].title, body: datareceived[3].title, colorbkg: "--background-color: #ccff90;", image: datareceived[3].url, isPalette: false});
+		postitid = 5;
 		allElements=allElements;
 	});
 
@@ -85,7 +88,7 @@
 	}
 
 	afterUpdate(async () => {
-		console.log("after")
+		console.log(allElements)
 		allElements.forEach((element, index) => {
 			if(titles[index]!==null || images[index]!==null || bodies[index]!== null){
 			/*fix to white note border color, the background is set to white but the border must be set to #e0e0e0*/
@@ -214,7 +217,6 @@
 	function handleout(event, i){
 		let nodes;
 		let array = [];
-		console.log(event.type)
 		if(allElements[i].isPalette===true){
 			nodes = document.getElementById("optionscontainer").childNodes;
 			nodes.forEach((value)=>{array.push(value.id)})
@@ -266,7 +268,7 @@
 			await tick();
 		}
 		if(i!=currentdragover && i!=currentdragging){
-			console.log("Dragging "+ currentdragging + " on " + i);
+			/*console.log("Dragging "+ currentdragging + " on " + i);*/
 			currentdragover=i;
 
 			if(currentdragging>i){
@@ -300,14 +302,14 @@
 			array.push("nocoloricon");
 		}
 		if(event.target.id!=="toolbaropenpalettenote" && event.target.id!=="optionscontainer" && !array.includes(event.target.id) && clicked!=true){
-			console.log("note opened");
+			/*console.log("note opened");*/
 			currentopened = i;
 			isOpen = true;
 		}
 	}
 
 	function boxshadow(e, i){
-		console.log("focussando")
+		/*console.log("focusing")*/
 		boxShadow[i] = "box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);";
 		fullpostit[i].style.opacity=1;
 	}
@@ -320,7 +322,7 @@
 	{#if isOpen}
 		<NoteOpened opened={allElements[currentopened]} bind:isOpen={isOpen} {setBackground} {deleteNote} {currentopened} {addNote}/>
 	{/if}
-	<NewNote {allElements} {addNote}/>
+	<NewNote bind:postitid={postitid} {allElements} {addNote}/>
 	<div id="notecontainer" bind:this={wall}>	
 		{#each allElements as postit, i}
 			<div draggable="true" class="postit" id={"postit"+i} bind:this={fullpostit[i]} style={postit.colorbkg} on:mouseenter={(e)=>{boxshadow(e,i)}} on:mouseleave={(e)=> {handleout(e, i)}} on:mousedown={(e)=> {handleout(e, i)}} on:drag={(e)=>{postitdragstart(e, i);}} on:dragenter={(e)=>{dragenter(e, i)}} on:dragover|preventDefault={(e)=>{dragover(e)}} on:click={(e)=>{openNote(e,i)}}>

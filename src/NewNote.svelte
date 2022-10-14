@@ -3,7 +3,7 @@
 	import Toolbar from "./Toolbar.svelte"
 
 	const i = 0;
-    let postitid = 0;
+    export let postitid;
     let bodyAdd = "";
     let titleAdd= "";
 
