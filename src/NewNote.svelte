@@ -2,31 +2,34 @@
     import { tick } from "svelte";
 	import Toolbar from "./Toolbar.svelte"
 
-	const i = 0;
-    export let postitid;
-    let bodyAdd = "";
-    let titleAdd= "";
+	const i = 0; /*placeholder variable for toolbar creation*/
+    export let postitid; /*unique id for postit dictionary in allElements*/
+    let bodyAdd = ""; /*bind to textarea value for newbody than inserted into body in postit dictionary inside allElements*/
+    let titleAdd= ""; /*bind to textarea value for newtitle than inserted into body in postit dictionary inside allElements*/
 
-    export let allElements;
-    export let addNote;
+    export let allElements; /*array of all postit*/
+    export let addNote; /*parent method to update the view on postit insertion*/
 
-	let clicked=false;
-	let dimensionintBody;
-	let dimensionintTitle;
-	let styleBody = "--height: 20px;";
-	let styleTitle = "--height: 24px;";
-	let newpostTitle;
-	let newpostBody;
+	let clicked=false; /*variable true on click on form for new postit insertion*/
+	let dimensionintBody; /*variable that temporally stores the current size of the div, hidden part also*/
+	let dimensionintTitle; /*variable that temporally stores the current size of the div, hidden part also*/
+	let styleBody = "--height: 20px;"; /*variable passed to the element that contains its style*/
+	let styleTitle = "--height: 24px;"; /*variable passed to the element that contains its style*/
+	let newpostTitle; /*bind to textarea element necessary to modify style and value when opened or closed*/
+	let newpostBody; /*bind to textarea element necessary to modify style and value when opened or closed*/
 
-	let isPalette = false;
-	let currentBackground ="--background-color: #ffffff;";
+	let isPalette = false; /*variable true if opened the menu for changing postit background*/
+	let currentBackground ="--background-color: #ffffff;"; /*current background color then added to postit dictionary inside allElements*/
 
-	let image = "";
-	let submitimage;
-	let isImage = false;
+	let image = ""; /*current image inserted into post*/
+	let submitimage; /*bind to input file necessary to insert image*/
+	let isImage = false; /*true if there is a image inside current new postit*/
 
+	/*HANDLE IMMAGINE ADDITION*/
+	/*function that gets current image inserted into input file*/
 	function setImage(e){
 		isImage=true;
+		/*gets only first file inserted*/
 		let curr = e.target.files[0];
 		let reader = new FileReader();
 		reader.readAsDataURL(curr);
@@ -44,6 +47,20 @@
 		clicked= true;
 	}
 
+	/*function that deletes image if click on button*/
+    function deleteimage(){
+		isImage=false;
+		image="";
+		submitimage.value="";
+	}
+
+	/*POSTIT CLOSURE HANDLE*/
+	/*function that opens the full newpostit with title and body textarea*/
+	function setClick(){
+		clicked= true;
+	}
+
+	/*function that delets new postit content if there's a click on close button*/
     function closeNote(){
 		clicked=false;
 		newpostTitle.value="";
@@ -59,58 +76,10 @@
 		submitimage.value="";
 	}
 
-	const setBackground = (i, color) => {
-		currentBackground = "--background-color: "+ color +";";
-	}
-
-	function setClick(){
-		clicked= true;
-	}
-
-	function handleout(event){
-		let nodes;
-		let array = [];
-		if(isPalette===true){
-			nodes = document.getElementById("optionscontainer").childNodes;
-			nodes.forEach((value)=>{array.push(value.id)})
-			array.push("nocoloricon");
-		}
-		if(event.target.id!=="toolbaropenpalettenote" && event.target.id!=="optionscontainer" && !array.includes(event.target.id) && isPalette===true){
-			isPalette=false;
-		}
-	}
-
-	async function dynamicResizeBody(props){
-		if(props=="body"){
-			styleBody = "--height: 0;";
-			await tick();
-			dimensionintBody = newpostBody.scrollHeight;
-			styleBody= "--height: " + dimensionintBody.toString() + "px;";
-		} else {
-			styleTitle = "--height: 0;";
-			await tick();
-			dimensionintTitle = newpostTitle.scrollHeight;
-			styleTitle= "--height: " + dimensionintTitle.toString() + "px;";
-		}
-	}
-
-    function deleteimage(){
-		isImage=false;
-		image="";
-		submitimage.value="";
-	}
-
-    function propagateContent(){
-        if(bodyAdd!="" || titleAdd!="" || image!=""){
-            allElements.unshift({id: postitid, title: titleAdd, body: bodyAdd, colorbkg: currentBackground, image: image, isPalette: false});
-            postitid++;
-        }
-        closeNote();
-        addNote();
-    }
-
+	/*function that inserts the new post in allElements when click outside new post forum and not on a postit*/
 	function outsideClick(node){
 		const handleClick = (event) => {
+			/*this condition controls that the click is not on toolbar or its child elements or on any postit*/
 			if (!node.contains(event.target) && clicked===true && event.target.id!="toolbaropenpalette" && event.target.closest(".postit")==null && event.target.closest("#background")==null) {
 				node.dispatchEvent(new CustomEvent("outclick"));
 			}
@@ -125,6 +94,53 @@
 		};
 	}
 
+	/*function that actively insert postit and information inside allElements*/
+    function propagateContent(){
+        if(bodyAdd!="" || titleAdd!="" || image!=""){
+            allElements.unshift({id: postitid, title: titleAdd, body: bodyAdd, colorbkg: currentBackground, image: image, isPalette: false});
+            postitid++;
+        }
+        closeNote();
+        addNote();
+    }
+
+	/*TOOLBAR HANDLING*/
+	/*function that closes the selection for background color on click outside or the pointer exit the new postit*/
+	function handleout(event){
+		let nodes;
+		let array = [];
+		if(isPalette===true){
+			nodes = document.getElementById("optionscontainer").childNodes;
+			nodes.forEach((value)=>{array.push(value.id)})
+			array.push("nocoloricon");
+		}
+		if(event.target.id!=="toolbaropenpalettenote" && event.target.id!=="optionscontainer" && !array.includes(event.target.id) && isPalette===true){
+			isPalette=false;
+		}
+	}
+
+	/*function that saves current selected background color*/
+	const setBackground = (i, color) => {
+		currentBackground = "--background-color: "+ color +";";
+	}
+
+	/*Function that assign the right height of the textarea on input*/
+	async function dynamicResizeBody(props){
+		if(props=="body"){
+			styleBody = "--height: 0;";
+			await tick();
+			dimensionintBody = newpostBody.scrollHeight;
+			styleBody= "--height: " + dimensionintBody.toString() + "px;";
+		} else {
+			styleTitle = "--height: 0;";
+			await tick();
+			dimensionintTitle = newpostTitle.scrollHeight;
+			styleTitle= "--height: " + dimensionintTitle.toString() + "px;";
+		}
+	}
+
+	/*PLACEHOLDER*/
+	/*placeholder function for Toolbar creation*/
 	function deleteNote(){}
 	function setNotePalette(){}
 </script>
@@ -132,30 +148,30 @@
     <div id="newNote">
 		<div id="start" class="newpostit" use:outsideClick on:outclick={propagateContent} on:click={(e)=> handleout(e)} on:mouseleave={(e)=> handleout(e)} style={currentBackground}>
 			<div id="titlebodyimage">
-			{#if isImage}
-				<div id="imagecontainer">
-					<img id="uploadedimage" alt ="immagine caricata" src={image}/>
-					<div id="deleteimagecontainer">
-						<span id="deleteimage" class="material-symbols-outlined" on:click={deleteimage}>delete</span>
+				{#if isImage}
+					<div id="imagecontainer">
+						<img id="uploadedimage" alt ="immagine caricata" src={image}/>
+						<div id="deleteimagecontainer">
+							<span id="deleteimage" class="material-symbols-outlined" on:click={deleteimage}>delete</span>
+						</div>
 					</div>
-				</div>
-			{/if}
-			<div id="titlewithimage">
-				<input style="display:none" type="file" accept=".jpg, .jpeg, .png" bind:this={submitimage} on:change={(e)=>{setImage(e);}}/>
-				<div id="newtitlecontainer" class="textcontainer" style={"--width: " + (clicked===false ? "80%" : "100%")} on:click={setClick}>
-					<textarea placeholder={clicked===false ? "Scrivi una nota..." : "Titolo..."} id="newtitle" class="title" bind:this={newpostTitle} bind:value={titleAdd} on:input={()=>dynamicResizeBody("title")} style={styleTitle+currentBackground + (isImage === true ? "--max-height: none" : "--max-height: 340px")}></textarea>
-				</div>
-				{#if !clicked}
-				<div id="iconcontainer" on:click={()=>{submitimage.click()}}>
-					<span id="toolbarclosedimage" class="material-symbols-outlined">image</span>
-				</div>
 				{/if}
-			</div>
-			{#if clicked}
-				<div id="newbodycontainer" class="textcontainer">
-					<textarea placeholder="Scrivi una nota..." id="newbody" class="body" bind:this={newpostBody} bind:value={bodyAdd} on:input={()=>dynamicResizeBody("body")} style={styleBody+currentBackground + (isImage === true ? "--max-height: none" : "--max-height: 340px")}></textarea>
+				<div id="titlewithimage">
+					<input style="display:none" type="file" accept=".jpg, .jpeg, .png" bind:this={submitimage} on:change={(e)=>{setImage(e);}}/>
+					<div id="newtitlecontainer" class="textcontainer" style={"--width: " + (clicked===false ? "80%" : "100%")} on:click={setClick}>
+						<textarea placeholder={clicked===false ? "Scrivi una nota..." : "Titolo..."} id="newtitle" class="title" bind:this={newpostTitle} bind:value={titleAdd} on:input={()=>dynamicResizeBody("title")} style={styleTitle+currentBackground + (isImage === true ? "--max-height: none" : "--max-height: 340px")}></textarea>
+					</div>
+					{#if !clicked}
+					<div id="iconcontainer" on:click={()=>{submitimage.click()}}>
+						<span id="toolbarclosedimage" class="material-symbols-outlined">image</span>
+					</div>
+					{/if}
 				</div>
-			{/if}
+				{#if clicked}
+					<div id="newbodycontainer" class="textcontainer">
+						<textarea placeholder="Scrivi una nota..." id="newbody" class="body" bind:this={newpostBody} bind:value={bodyAdd} on:input={()=>dynamicResizeBody("body")} style={styleBody+currentBackground + (isImage === true ? "--max-height: none" : "--max-height: 340px")}></textarea>
+					</div>
+				{/if}
 			</div>
 			{#if clicked}
 				<div id="toolbarcontainer">
@@ -167,8 +183,8 @@
 	</div>
 
 <style>
-    /*FORM NUOVA NOTA*/
-	/*Container div per centrare form newpostit*/
+    /*NEW POSTIT INSERTION STYLE*/
+	/*div container that contains all the postit information image, title and body*/
 	#newNote{
 		display: flex;
 		justify-content: center;
@@ -179,7 +195,7 @@
 		margin-bottom: 16px;
 	}
 
-	/**/
+	/*container of title, body and image that ensure scrolling on overflow*/
 	#titlebodyimage{
 		height: fit-content;
 		max-height: 724px;
@@ -188,27 +204,28 @@
         border-top-left-radius: 8px;
     }
 
+	/*container for added image*/
 	#imagecontainer{
 		position: relative;
 		height: fit-content;
 		width: fit-content;
 	}
 
+	/*style for image deletion icon*/
 	#imagecontainer:hover > #deleteimagecontainer{
 		opacity:40%;
 	}
 	#imagecontainer:hover > #deleteimagecontainer:hover{
 		opacity:100%;
 	}
-	/*Nuova immagine nella nota*/
+
+	/*new image inserted*/
 	#uploadedimage{
 		width: 100%;
 		height: 100%;
 	}
 
-	#deleteimage{
-		color:white;
-	}
+	/*container for bin icon*/
 	#deleteimagecontainer{
 		display: flex;
 		justify-content: center;
@@ -223,7 +240,12 @@
 		opacity: 0%;
 	}
 
-	/*Box nuova nota, contiene form per titolo e boty e tasto per confermare*/
+	/*bin icon for image deletion*/
+	#deleteimage{
+		color:white;
+	}
+
+	/*container for all new post elements, toolbar included*/
 	.newpostit{
 		box-sizing: border-box;
 		width: 598px;
@@ -236,8 +258,8 @@
 		background-color: var(--background-color);
 	}
 
-	/*TEXTAREA TITOLO*/
-	/*Barra titolo chiusa con icona imagine*/
+	/*TITLE TEXTAREA*/
+	/*Title textarea with icon addition icon*/
 	#titlewithimage{
 		display: flex;
 		flex-direction: row;
@@ -245,7 +267,7 @@
 		justify-content:space-between;
 	}
 
-	/*Container per dare padding alla textarea del titolo*/
+	/*Container title textarea*/
 	#newtitlecontainer{
 		width: var(--width);
 		display: flex;
@@ -255,7 +277,8 @@
 		padding-left: 15px;
 		padding-right: 15px;
 	}
-	/*Proprietà aggiuntive per titolo nuovo postit*/
+
+	/*new title textarea*/
 	#newtitle{
 		height: var(--height);
 		background-color: var(--background-color);
@@ -276,7 +299,7 @@
 		white-space: pre-wrap;
 	}
 
-	/*PROPRIETÀ GENERALI ICONE GOOGLE*/
+	/*PROPERTIES FOR IMPORTED GOOGLE ICONS*/
 	.material-symbols-outlined{
 		user-select: none;
 		display: flex;
@@ -289,8 +312,8 @@
 		background-color: rgba(95,99,104,0.157);
 	}
 
-	/*NEWNOTECHIUSA*/
-	/*Container icone barra titolo*/
+	/*NEWPOSTIT CLOSED*/
+	/*container for title textarea and image addition icon*/
 	#iconcontainer{
 		display: flex;
 		justify-content: center;
@@ -298,14 +321,14 @@
 		width: 20%;
 		height: 44px;
 	}
-	/*Icona immagine*/
+	/*image addition icon*/
 	#toolbarclosedimage{
 		width: 44px;
 		height: 44px;
 	}
 
-	/*NEWNOTE APERTA*/
-	/*Container barra inferiore newnote*/
+	/*NEWPOSTIT OPENED*/
+	/*container for toolbar*/
 	#toolbarcontainer{
 		position: relative;
 		margin-left: 15px;
@@ -316,7 +339,7 @@
 	}
 
 	/*TEXTAREA BODY*/
-	/*Container per dare padding alla textarea del body*/
+	/*container for body textarea*/
 	#newbodycontainer{
 		display: flex;
 		height: fit-content;
@@ -325,7 +348,7 @@
 		padding-left: 15px;
 		padding-right: 15px;
 	}
-	/*Proprietà font placeholder body*/
+	/*poperty for body placeholder text*/
 	#newbody::placeholder{
 		font-size: 14px;
 		color: rgba(0,0,0,0.702);
@@ -333,7 +356,7 @@
 		letter-spacing: 0.01785714em;
 		line-height: 1.25rem;
 	}
-	/*Proprietà aggiuntive per body nuovo postit*/
+	/*property for body textarea*/
 	#newbody{
 		height: var(--height);
 		background-color: var(--background-color);
@@ -355,8 +378,8 @@
 		white-space: pre-wrap;
 	}
 	
-	/*BOTTONE CHIUDI NOTA*/
-	/*Button chiudi nota*/
+	/*CLOSE POSTIT BUTTON*/
+	/*close postit button style*/
 	#closenote{
 		background-color: white;
 		border: transparent;

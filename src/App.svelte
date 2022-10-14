@@ -46,6 +46,7 @@
 
 	onMount(async () => {
 		calculateDimension();
+		
 		const source = "https://jsonplaceholder.typicode.com/photos";
 		const response = await fetch(source);
 		const datareceivedraw = await response.json();
