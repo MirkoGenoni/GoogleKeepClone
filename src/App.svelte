@@ -20,6 +20,7 @@
 		allElements=allElements;
 	}
 
+	/***/
 	let postitid = 0; /*univoque id for every post inserted into allElements*/
 	let fullpostit = []; /*bind for every postit div created*/
 
