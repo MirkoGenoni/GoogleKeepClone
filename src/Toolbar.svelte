@@ -1,14 +1,15 @@
 <script>
     import Palette from "./BackgroundColor.svelte"
 	
-    export let isPalette;
-    export let setBackground;
-    export let submitimage;
-	export let deleteNote;
-	export let mini;
-	export let i;
-	export let setNotePalette;
+    export let isPalette; /*variable true if the change background color menu is opened*/
+    export let setBackground; /*parent function that changes the postit background color*/
+    export let submitimage; /*parent input file element*/
+	export let deleteNote; /*parent function that deletes the postit*/
+	export let mini; /*true if the toolbar is in a postit and not in new postit, adds the delete icon*/
+	export let i; /*0 if the parent is a single postit, position in allElements otherwise*/
+	export let setNotePalette; /*parent function that opens and closes the change background color menu*/
 	
+	/*function that opens and closes the change background color menu is opened*/
     function setPalette(){
 		if(isPalette){
 			isPalette = false;
@@ -26,7 +27,7 @@
     <span id="toolbaropenimagenote" class="material-symbols-outlined" on:click={()=>{submitimage.click()}} style={mini===true ? "font-size: 16px" : "font-size: 24px"}>image</span>
     <span id="toolbaropenpalettenote" class="material-symbols-outlined" on:click={setPalette} style={mini===true ? "font-size: 16px" : "font-size: 24px"}>palette</span>
 	{#if mini}
-		<span id="toolbaropenpalettenote" class="material-symbols-outlined" on:click={()=>{deleteNote(i);}} style={mini===true ? "font-size: 16px" : "font-size: 24px"}>delete</span>
+		<span id="deletenote" class="material-symbols-outlined" on:click={()=>{deleteNote(i);}} style={mini===true ? "font-size: 16px" : "font-size: 24px"}>delete</span>
 	{/if}
     {#if isPalette}
         <Palette setBackground={setBackground} {mini} {i}/>
@@ -34,12 +35,13 @@
 </div>
 
 <style>
+	/*icon container*/
     #tools{
 		display: flex;
 		flex-direction: row;
 	}
 
-	/*Icona immagine*/
+	/*image icon*/
 	#toolbaropenimagenote{
 		margin-left: 8px;
 		margin-right: 8px;
@@ -47,7 +49,7 @@
 		height: 34px;
 	}
 
-	/*Icona palette*/
+	/*palette icon*/
 	#toolbaropenpalettenote{
 		margin-right: 8px;
 		margin-left: 8px;
@@ -55,6 +57,15 @@
 		height: 34px;
 	}
 
+	/*bin icon*/
+	#deletenote{
+		margin-right: 8px;
+		margin-left: 8px;
+		width: 34px;
+		height: 34px;
+	}
+
+	/*google icon style*/
     .material-symbols-outlined{
 		user-select: none;
 		display: flex;

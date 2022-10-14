@@ -7,6 +7,7 @@
     export let mini = false;
     export let i;
 
+    /*variable that stores all the color in the change background color menu*/
     const colors = [
         {id:"1", name:"red", code: "#f28b82"},
         {id:"2", name:"arancione", code: "#fbbc04"},
@@ -32,6 +33,7 @@
 </div>
 
 <style>
+    /*container for all the change background color palette*/
     #optionscontainer{
         position: absolute;
         top: 33px;
@@ -50,13 +52,7 @@
         z-index: 2;
     }
 
-    .material-symbols-outlined{
-        cursor: default;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 18px;
-    }
+    /*google icon for nocolor*/
     #nocolorcontainer{
         display: flex;
         justify-content: center;
@@ -73,6 +69,7 @@
         border: 2px solid black;
     }
 
+    /*alle the color in palette*/
     .color{
         background-color: var(--background-color);
         width: 28px;
@@ -83,5 +80,14 @@
 
     .color:hover{
         border: 2px solid #a142f4;
+    }
+
+    /*google icon style*/
+    .material-symbols-outlined{
+        cursor: default;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 18px;
     }
 </style>
