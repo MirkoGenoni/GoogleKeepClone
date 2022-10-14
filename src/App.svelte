@@ -222,20 +222,27 @@
 		});
 	});
 
+	/*FROM HERE THE VARIABLE I CORRESPONDS TO THE POSITION IN allElements*/
+	/* i is assigned when the list of postit is rendered by scanning in order the array AllElements*/
+
+	/*function that sets the background of a specific postit*/
 	const setBackground = (i, color) => {
 		allElements[i].colorbkg= "--background-color: "+ color +";";
 	}
 
+	/*function that deletes a specific note from allElements*/
 	const deleteNote = (i) => {
 		if(isOpen){ isOpen = false }
 		allElements.splice(i, 1);
 		allElements=allElements;
 	}
 
+	/*function that activates and deactivates the background color selection*/
 	const setNotePalette = (i) => {
 		allElements[i].isPalette===true ? allElements[i].isPalette=false : allElements[i].isPalette=true;
 	}
 
+	/*function that close the background selection when there is an outside click or the cursor exit the postit*/
 	function handleout(event, i){
 		let nodes;
 		let array = [];
@@ -247,12 +254,15 @@
 		if(event.target.id!=="toolbaropenpalettenote" && event.target.id!=="optionscontainer" && !array.includes(event.target.id) && allElements[i].isPalette===true){
 			allElements[i].isPalette=false;
 		} 
+		/*this case remove the shadow from the postit when the cursoe leaves the postit*/
 		if(event.type!="mousedown") {
 			boxShadow[i]=null;
+			/*change of a useless property that triggers a new render*/
 			fullpostit[i].style.opacity=1;
 		}
 	}
 
+	/*function that adds the image to a specific post in allElements*/
 	function setImage(e, i){
 		let curr = e.target.files[0];
 		let reader = new FileReader();
@@ -270,24 +280,30 @@
 
 	}
 
+	/*function called when a postit is dragged*/
 	function postitdragstart(e, i){
 		if(currentdragging==null){
 			currentdragging = i;
+			/*the postit on the wall becomes invisible leaving only the ghost under the cursor*/
 			e.target.style.opacity="0%";
 			dragfix = i;
 		}
 	}
 
+	/*function called when the postit is dropped anywhere on the wall*/
 	function walldragend(){
 		fullpostit[currentdragging].style.opacity="100%";
 		currentdragover = null;
 		currentdragging = null;
 	}
 
+	/*function called when the postit dragged is on a droppable place*/
 	async function dragenter(e, i){
 		for(let j=0; j++; j<5){
 			await tick();
 		}
+		/*function that reorganizes allElement putting the element dragged on the position entered*/
+		/*sliding all the other elements accordingly*/
 		if(i!=currentdragover && i!=currentdragging){
 			/*console.log("Dragging "+ currentdragging + " on " + i);*/
 			currentdragover=i;
@@ -305,12 +321,16 @@
 			allElements = allElements;
 		}
 	}
+
+	/*placeholder function that disables the return of the ghost image of the dragged element*/
 	function dragover(e){}
 
+	/*function that opens the postit on click*/
 	function openNote(event, i){		
 		let nodes;
 		let array = [];
 
+		/*array will contain all toolbar element*/
 		let id = "tools";
 		nodes=document.getElementById(id).childNodes
 		nodes.forEach((value)=>{array.push(value.id)})
@@ -322,6 +342,7 @@
 			nodes.forEach((value)=>{array.push(value.id)})
 			array.push("nocoloricon");
 		}
+		/*this condition ensures that the click is not on any element of the toolbar*/
 		if(event.target.id!=="toolbaropenpalettenote" && event.target.id!=="optionscontainer" && !array.includes(event.target.id) && clicked!=true){
 			/*console.log("note opened");*/
 			currentopened = i;
@@ -329,9 +350,11 @@
 		}
 	}
 
+	/*function called on mouse enter on any postit, setting the shadow*/
 	function boxshadow(e, i){
 		/*console.log("focusing")*/
 		boxShadow[i] = "box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);";
+		/*useless style set that trigger render*/
 		fullpostit[i].style.opacity=1;
 	}
 
@@ -370,6 +393,7 @@
 </main>
 
 <style>
+	/*sets the font for all the elements*/
 	:global(body){
 		height: fit-content;
 		margin: 0px;
@@ -377,10 +401,12 @@
 		font-family: "Google Sans", Roboto, Arial, sans-serif;
 	}
 
+	/*style of the element for the postit with no image*/
 	.noimage{
 		height: 0px;
 	}
 
+	/*container for all the the postit*/
 	#notecontainer{
 		display: flex;
 		flex-direction: row;
@@ -394,6 +420,7 @@
 		height: fit-content;
 	}
 
+	/*container for all the elements of the postit*/
 	.postit{
 		position:relative;
 		display: flex;
@@ -408,15 +435,13 @@
 		border-color: #e0e0e0;
 		background-color: var(--background-color);
 	}
-
-	/*.postit:hover{
-		box-shadow: 0 1px 2px 0 rgb(60 64 67 / 30%), 0 1px 3px 1px rgb(60 64 67 / 15%);
-	}*/
 	
+	/*sets the visibility for the toolbar*/
 	.postit:hover > .toolbarcontainer{
 		opacity: 100%;
 	}
 
+	/*container for the title and body textarea*/
 	.textcontainer{
 		width: 208px;
 		height: fit-content;
@@ -426,6 +451,7 @@
 		padding-bottom: 0px;
 	}
 
+	/*container for the postit image*/
 	.noteimagecontainer{
 		width: 240px;
 		height: 154px;
@@ -436,6 +462,7 @@
 		border-top-right-radius: 8px;
 	}
 
+	/*postit image*/
 	.noteimage{
 		width: 100%;
 		object-fit:cover;
@@ -444,6 +471,7 @@
 		border-top-right-radius: 8px;
 	}
 
+	/*title postit textarea*/
 	.titlepostit{
 		cursor: default;
 		color: #202124;
@@ -464,10 +492,12 @@
 		pointer-events: none;
 	}
 
+	/*properties for body container*/
 	#bodycontainer{
 		padding-top: 0px;
 	}
 
+	/*body postit textarea*/
 	.bodypostit{
 		cursor: default;
 		color: #202124;
@@ -494,6 +524,7 @@
 		overflow: auto;
 	}
 
+	/*container for toolbar*/
 	.toolbarcontainer{
 		position: absolute;
 		margin-bottom: 5px;
