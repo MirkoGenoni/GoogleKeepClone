@@ -13,40 +13,42 @@
 	import {tick} from 'svelte';
 	import Toolbar from "./Toolbar.svelte"
 	
-	let allElements = [];
+	let allElements = []; /*array that holds all the postit dictionary that contains all the information of the postit*/
 
-
+	/*function that updates the visualization on added postit*/
 	function addNote(){
 		allElements=allElements;
 	}
 
-	let postitid = 0;
-	let fullpostit = [];
-	let imagescontainer = [];
-	let images = [];
-	let titles = [];
-	let bodies = [];
-	let toolbars=[];
-	let wall;
-	let width;
-	let margins;
+	let postitid = 0; /*univoque id for every post inserted into allElements*/
+	let fullpostit = []; /*bind for every postit div created*/
 
-	let submitimage = [];
+	/*HTML ELEMENT BINDERS FOR DYNAMIC STYLING*/
+	let imagescontainer = []; /*bind for every image container div created*/
+	let images = []; /*binder for every img element inside the page*/
+	let titles = []; /*binder for every title div inside the page*/
+	let bodies = []; /*binder for every body div inside the page*/
+	let toolbars=[]; /*binder for every toolbar container div inside the page*/
+	let submitimage = []; /*binder for every input file necessary to add image to a single postit*/
+	let wall; /*binder fot the page that will hold every postit div*/
+	let width; /*variable that contains current wall width, depending on window size*/
+	let margins; /*variable that contains current wall margins, depending on window size*/
+	let boxShadow = []; /*variable that hold every shadow for every postit*/
 
-	let draggingstyle;
-	let currentdragging;
-	let currentdragover=null;
-	let dragfix = null;
+	let currentdragging; /*variable that holds the current position inside the wall div of the element being dragged*/
+	let currentdragover=null; /*variable that hold current position inside wall div of the element on which there is a dragged item*/
+	let dragfix = null; /*variable for correct styling of the dragged item on the wall div*/
 
-	let currentopened;
-	let isOpen = false;
-	let clicked = false;
+	let currentopened;/*id of the current opened postit*/
+	let isOpen = false; /*true if a postit has been opened*/
+	let clicked = false; /*true if new postit is opened*/
 
-	let boxShadow = [];
-
+	/*function that runs on app creation*/
 	onMount(async () => {
+		/*sets the dimension for the wall for postit depending on window size*/
 		calculateDimension();
-		
+
+		/*gets some placeholder information from a site*/
 		const source = "https://jsonplaceholder.typicode.com/photos";
 		const response = await fetch(source);
 		const datareceivedraw = await response.json();
@@ -60,6 +62,7 @@
 		allElements=allElements;
 	});
 
+	/*function that calculates correct wall dimension and margins depending on window dimension*/
 	function calculateDimension() {
 		if(window.innerWidth>1738){
 			width = 6*252-10;
@@ -88,8 +91,9 @@
 		}
 	}
 
+	/*function that runs every time a component view is updated and corrects the style of every post on every update*/
 	afterUpdate(async () => {
-		console.log(allElements)
+		/*console.log(allElements)*/
 		allElements.forEach((element, index) => {
 			if(titles[index]!==null || images[index]!==null || bodies[index]!== null){
 			/*fix to white note border color, the background is set to white but the border must be set to #e0e0e0*/
@@ -100,19 +104,26 @@
 			} else {
 				tmppostitstyle="border-color: #e0e0e0;" + "--background-color: " + backgroundCol + ";"
 			}
+			/*function that adds the shadow when the pointer is over that postit*/
 			if(boxShadow[index]!=null && index!=currentdragging){
 				tmppostitstyle += boxShadow[index];
 			}
+			/*remove the shadow on the postit on the wall if the postit is dragged*/
 			if(index==dragfix){
 				tmppostitstyle += "box-shadow: none";
 			}
 			fullpostit[index].style = tmppostitstyle;
 
+			/*this assign resets the textarea dimension that will be later updated*/
 			titles[index].style = "height: 0px;"
 			bodies[index].style = "height: 0px;"
 			images[index].style = "height: 0px;"
+
+			/*variable that holds the current image class inside the postit div*/
+			/*in the html there will be a div with "noimage" class if there is no image in the postit*/
 			let imageclass = new String(images[index].getAttribute("class"));
 
+			/*STYLE FOR POSTIT WITH ONLY IMAGE*/
 			if(titles[index].value==="" && bodies[index].value==="" && !imageclass.includes("noimage")){
 				imagescontainer[index].style="height:100%;";
 				images[index].style = "border-radius: 8px;"
@@ -123,6 +134,7 @@
 				bodies[index].style = "height: 0px; margin: 0px; padding: 0px;"
 			}
 
+			/*STYLE FOR POSTIT WITH ONLY TITLE AND IMAGE OR TITLE AND BODY AND IMAGE*/
 			if(((titles[index].value!=="" && bodies[index].value==="") || ((titles[index].value!=="" && bodies[index].value!==""))) && !imageclass.includes("noimage")){
 				imagescontainer[index].style="height:154px;";
 				images[index].style = "border-top-left-radius: 8px; border-top-right-radius:8px;";
@@ -134,6 +146,7 @@
 				bodies[index].style = "height: 0px; margin: 0px; padding: 0px;"
 			}
 
+			/*STYLE FOR POSTIT WITH ONLY BODY AND IMAGE */
 			if((titles[index].value==="" && bodies[index].value!=="") && !imageclass.includes("noimage")){
 				imagescontainer[index].style="height:154px;";
 				images[index].style = "border-top-left-radius: 8px; border-top-right-radius:8px;";
@@ -144,6 +157,7 @@
 				titles[index].parentElement.style = "padding: 0px; height: 0px;"
 			}
 
+			/*STYLE FOR POSTIT WITH ONLY TITLE*/
 			if(titles[index].value!=="" && bodies[index].value==="" && imageclass.includes("noimage")){
 				titles[index].parentElement.style="height: fit-content;  padding: 12px 16px 12px 16px; max-height: 197px;"
 				titles[index].style = "height: " + titles[index].scrollHeight + "px;"
@@ -152,6 +166,7 @@
 				bodies[index].style = "height: 0px; margin: 0px; padding: 0px;"
 			} 
 
+			/*STYLE FOR POSTIT WITH ONLY BODY*/
 			if(bodies[index].value!=="" && titles[index].value==="" && imageclass.includes("noimage")) {
 				bodies[index].parentElement.style = "height: fit-content; padding: 12px 16px 12px 16px; max-height: 199px;"
 				bodies[index].style = "height: " + bodies[index].scrollHeight + "px;"
@@ -160,6 +175,7 @@
 
 			}
 			
+			/*STYLE FOR POSTIT WITH ONLY TITLE AND BODY AND THERE IS NO TEXT OVERFLOW*/
 			if(titles[index].value!=="" && bodies[index].value!=="" && titles[index].scrollHeight+bodies[index].scrollHeight<193 && imageclass.includes("noimage")){
 				titles[index].parentElement.style="height: fit-content;  padding: 12px 16px 5px 16px;"
 				titles[index].style = "height: " + titles[index].scrollHeight + "px;"
@@ -168,6 +184,8 @@
 				bodies[index].style = "height: " + bodies[index].scrollHeight + "px;"
 			}
 
+			/*on the next two cases the length is calculated not on characters but on textarea scrollHeight*/
+			/*STYLE FOR POSTIT WITH ONLY TITLE AND BODY, THERE IS OVERFLOW AND THE BODY IS EQUAL OR LONGER OF THE TITLE */
 			if(titles[index].value!=="" && bodies[index].value!=="" && titles[index].scrollHeight+bodies[index].scrollHeight>193
 			   && titles[index].scrollHeight<=bodies[index].scrollHeight && imageclass.includes("noimage")){
 				titles[index].parentElement.style="height: 48px;  padding: 12px 16px 5px 16px;"
@@ -176,7 +194,8 @@
 				bodies[index].parentElement.style = "height: fit-content; max-height: 144px; padding: 5px 16px 12px 16px;"
 				bodies[index].style = "height: " + bodies[index].scrollHeight + "px; max-height: 144px;"
 			}
-
+			
+			/*STYLE FOR POSTIT WITH ONLY TITLE AND BODY, THERE IS OVERFLOW AND THE TITLE IS EQUAL OR LONGER OF THE BODY */
 			if(titles[index].value!=="" && bodies[index].value!=="" && titles[index].scrollHeight+bodies[index].scrollHeight>193
 			   && titles[index].scrollHeight>bodies[index].scrollHeight && imageclass.includes("noimage")){
 				titles[index].parentElement.style="height: fit-content; max-height: 138px; padding: 12px 16px 5px 16px;"
@@ -186,6 +205,7 @@
 				bodies[index].style = "height: 60px;"
 			}
 
+			/*this cases render the current postit on the wall completely transparent and removes the toolbar*/
 			if(currentdragging!=null){
 				fullpostit[currentdragging].style.opacity = "0%";
 				toolbars[dragfix].style.opacity="0%";
@@ -194,6 +214,7 @@
 				dragfix=null;
 			}
 
+			/*this case render the current opened postit on the wall completely transparent*/
 			if(isOpen==true){
 				fullpostit[currentopened].style.opacity = "0%";
 			}
@@ -251,7 +272,6 @@
 
 	function postitdragstart(e, i){
 		if(currentdragging==null){
-			draggingstyle = getComputedStyle(e.target);
 			currentdragging = i;
 			e.target.style.opacity="0%";
 			dragfix = i;
