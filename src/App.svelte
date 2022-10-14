@@ -45,6 +45,15 @@
 
 	onMount(async () => {
 		calculateDimension();
+		const source = "https://jsonplaceholder.typicode.com/photos";
+		const response = await fetch(source);
+		const datareceivedraw = await response.json();
+		const string = JSON.stringify(datareceivedraw);
+		const datareceived = JSON.parse(string);
+		allElements.unshift({id: datareceived[0].id, title: datareceived[0].title, body: null, colorbkg: "--background-color: #aecbfa;", image: datareceived[0].url, isPalette: false});
+		allElements.unshift({id: datareceived[1].id, title: null, body: datareceived[1].title, colorbkg: "--background-color: #ffffff;", image: datareceived[1].url, isPalette: false});
+		allElements.unshift({id: datareceived[2].id, title: null, body: null, colorbkg: "--background-color: #f28b82;", image: datareceived[2].url, isPalette: false})
+		allElements=allElements;
 	});
 
 	function calculateDimension() {
