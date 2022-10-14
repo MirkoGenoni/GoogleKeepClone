@@ -104,30 +104,30 @@
 </script>
 
 
-<div id="background" on:click={(e)=>{handleclosebyoutside(e)}}>
-	<div id="openednote" style={opened.colorbkg} on:click={(e)=> handleout(e)} on:mouseleave={(e)=> handleout(e)}>
-		<div id="titleimagebody">
+<div draggable="false" id="background" on:mousedown={(e)=>{handleclosebyoutside(e)}}>
+	<div draggable="false" id="openednote" style={opened.colorbkg} on:click={(e)=> handleout(e)} on:mouseleave={(e)=> handleout(e)}>
+		<div draggable="false" id="titleimagebody">
 			{#if opened.image!==""}
-				<div id="openedimagecontainer">
-					<img id="openeduploadedimage" alt ="immagine caricata" src={opened.image}/>
-					<div id="openeddeleteimagecontainer">
-						<span id="openeddeleteimage" class="material-symbols-outlined" on:click={deleteimage}>delete</span>
+				<div draggable="false" id="openedimagecontainer">
+					<img draggable="false" id="openeduploadedimage" alt ="immagine caricata" src={opened.image}/>
+					<div draggable="false" id="openeddeleteimagecontainer">
+						<span draggable="false" id="openeddeleteimage" class="material-symbols-outlined" on:click={deleteimage}>delete</span>
 					</div>
 				</div>
 			{/if}
-			<div id="titlewithimageform">
-				<input style="display:none" type="file" accept=".jpg, .jpeg, .png" bind:this={submitimage} on:change={(e)=>{setImage(e);}}/>
-				<div id="openedtitlecontainer" class="textcontainer" style={"--width: 100%"}>
-					<textarea placeholder="Titolo" id="openedtitle" class="title" bind:this={title} bind:value={opened.title} on:input={()=>dynamicResizeBody("title")} style={styleTitle+opened.colorbkg}></textarea>
+			<div draggable="false" id="titlewithimageform">
+				<input draggable="false" style="display:none" type="file" accept=".jpg, .jpeg, .png" bind:this={submitimage} on:change={(e)=>{setImage(e);}}/>
+				<div draggable="false" id="openedtitlecontainer" class="textcontainer" style={"--width: 100%"}>
+					<textarea draggable="false" placeholder="Titolo" id="openedtitle" class="title" bind:this={title} bind:value={opened.title} on:input={()=>dynamicResizeBody("title")} style={styleTitle+opened.colorbkg}></textarea>
 				</div>
 			</div>
-			<div id="openedbodycontainer" class="textcontainer">
-				<textarea placeholder="Nota" id="openedbody" class="body" bind:this={body} bind:value={opened.body} on:input={()=>dynamicResizeBody("body")} style={styleBody+opened.colorbkg}></textarea>
+			<div draggable="false" id="openedbodycontainer" class="textcontainer">
+				<textarea draggable="false" placeholder="Nota" id="openedbody" class="body" bind:this={body} bind:value={opened.body} on:input={()=>dynamicResizeBody("body")} style={styleBody+opened.colorbkg}></textarea>
 			</div>
 		</div>
-		<div id="toolbarcontainer">
+		<div draggable="false" id="toolbarcontainer">
 			<Toolbar i={currentopened} bind:isPalette={isPalette} setNotePalette={setNotePalette} {setBackground} {deleteNote} {submitimage} mini={true}/>
-			<button id="closenote" on:click={closeNote} style={opened.colorbkg}>Chiudi</button>
+			<button draggable="false" id="closenote" on:click={closeNote} style={opened.colorbkg}>Chiudi</button>
 		</div>
 	</div>
 </div>
