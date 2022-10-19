@@ -1,13 +1,11 @@
 <script>
     import Palette from "./BackgroundColor.svelte"
+    import {createEventDispatcher} from "svelte";
 	
     export let isPalette; /*variable true if the change background color menu is opened*/
     export let setBackground; /*parent function that changes the postit background color*/
-    export let submitimage; /*parent input file element*/
-	export let deleteNote; /*parent function that deletes the postit*/
 	export let mini; /*true if the toolbar is in a postit and not in new postit, adds the delete icon*/
-	export let i; /*0 if the parent is a single postit, position in allElements otherwise*/
-	export let setNotePalette; /*parent function that opens and closes the change background color menu*/
+	export let i; /*0 if the parent is a single postit, position in $allPostit otherwise*/
 	
 	/*function that opens and closes the change background color menu is opened*/
     function setPalette(){
@@ -17,20 +15,25 @@
 			isPalette = true;
 		}
 
-		if(mini){
-			setNotePalette(i);
-		}
 	}
+
+	const dispatch = createEventDispatcher();
+
+
+	function deletenote(){
+			dispatch('deletePostit');
+	}
+	
 </script>
 
-<div id="tools">
-    <span id="toolbaropenimagenote" class="material-symbols-outlined" on:click={()=>{submitimage.click()}} style={mini===true ? "font-size: 16px" : "font-size: 24px"}>image</span>
-    <span id="toolbaropenpalettenote" class="material-symbols-outlined" on:click={setPalette} style={mini===true ? "font-size: 16px" : "font-size: 24px"}>palette</span>
+<div id="tools" on:click|stopPropagation>
+    <span id="toolbaropenimagenote" class="material-symbols-outlined" on:click|stopPropagation={()=>dispatch('submitimage')} style={mini===true ? "font-size: 16px" : "font-size: 24px"}>image</span>
+    <span id="toolbaropenpalettenote" class="material-symbols-outlined" on:click|stopPropagation={setPalette} style={mini===true ? "font-size: 16px" : "font-size: 24px"}>palette</span>
 	{#if mini}
-		<span id="deletenote" class="material-symbols-outlined" on:click={()=>{deleteNote(i);}} style={mini===true ? "font-size: 16px" : "font-size: 24px"}>delete</span>
+		<span id="deletenote" class="material-symbols-outlined" on:click|stopPropagation={deletenote} style={mini===true ? "font-size: 16px" : "font-size: 24px"}>delete</span>
 	{/if}
     {#if isPalette}
-        <Palette setBackground={setBackground} {mini} {i}/>
+        <Palette setBackground={setBackground} {mini} {i} on:newcolor/>
     {/if}
 </div>
 
