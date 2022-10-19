@@ -192,7 +192,7 @@
 	/*container for all the the postit*/
 	#notecontainer {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, 242px); /* 80px columns */
+		grid-template-columns: repeat(auto-fill, 242px);
 		justify-content: center;
   		column-gap: 10px;
 		margin: 0px 120px;
