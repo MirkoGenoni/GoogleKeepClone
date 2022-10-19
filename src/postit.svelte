@@ -197,13 +197,6 @@
         overflow: hidden;
     }
 
-    .clamp10 {
-        display: -webkit-box;
-        -webkit-line-clamp: 10;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-
     .bodypostit:focus {
         overflow: auto;
     }
