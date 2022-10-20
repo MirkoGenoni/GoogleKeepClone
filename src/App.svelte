@@ -11,7 +11,6 @@
 		$allPostit = $allPostit;
 	}
 
-	let postitid = 0; /*univoque id for every post inserted into $allPostit*/
 	let currentdragging; /*variable that holds the current position inside the wall div of the element being dragged*/
 	let currentdragover =
 		null; /*variable that hold current position inside wall div of the element on which there is a dragged item*/
@@ -93,9 +92,8 @@
 
 	/*function that opens the postit on click*/
 	function openNote(event, i) {
-		console.log(event.target.id);
-			currentopened = i;
-			isOpen = true;
+		currentopened = i;
+		isOpen = true;
 	}
 </script>
 
@@ -141,7 +139,7 @@
 				bind:isOpen
 			/>
 		{/if}
-		<NewNote bind:postitid allElements={$allPostit} {addNote} />
+		<NewNote allElements={$allPostit} {addNote} />
 
 		<div id="notecontainer">
 			{#each $allPostit as postit, i (postit.id)}
@@ -168,6 +166,7 @@
 					}}
 					on:change={(e) => {
 						setImage(e, i);
+						e.target.value="";
 					}}
 				/>
 			{/each}

@@ -1,23 +1,22 @@
 <script>
 	import Toolbar from "./Toolbar.svelte";
 	import { tick } from "svelte";
-	import { afterUpdate } from "svelte";
+	import { onMount } from "svelte";
 
 	export let opened; /*allElement's element with all its properties*/
 	export let isOpen; /*true if the postit is open and opens the relative view*/
 	export let currentopened; /*Index of current element of $allPostit opened*/
 	export let addNote; /*parent method necessary to update the page render*/
 
-	let submitimage; /*element bind necessary to upload image*/
 	let title; /*element bind necessary to dinamically resize the textarea*/
 	let body; /*element bind necessary to dinamically resize the textarea*/
 	let dimensionintBody; /*variable that temporally stores the current size of the div, hidden part also*/
 	let dimensionintTitle; /*variable that temporally stores the current size of the div, hidden part also*/
 
 	let styleBody =
-		"--height: 20px;"; /*variable passed to the element that contains its style*/
+		"--height: 20px;"; /*variable passed to the body element that contains its height*/
 	let styleTitle =
-		"--height: 24px;"; /*variable passed to the element that contains its style*/
+		"--height: 24px;"; /*variable passed to the title element that contains its height*/
 
 
 	/*IMAGE HANDLING*/
@@ -41,7 +40,6 @@
 	/*function that deletes the image inserted inside the postit*/
 	function deleteimage() {
 		opened.image = "";
-		submitimage.value = "";
 	}
 
 	/*TETXTAREA HANDLING*/
@@ -60,8 +58,8 @@
 		}
 	}
 
-	/*function that run just after the render and it assign the right height to the textarea*/
-	afterUpdate(async () => {
+	/*function that run jon mount and it assign the right height to the textarea*/
+	onMount(async () => {
 		title.style = "--height: " + title.scrollHeight + "px;";
 		body.style = "--height: " + body.scrollHeight + "px;";
 	});
@@ -77,7 +75,7 @@
 <div
 	draggable="false"
 	id="background"
-	on:click|self={closeNote}
+	on:mousedown|self={closeNote}
 >
 	<div
 		draggable="false"
@@ -107,16 +105,6 @@
 				</div>
 			{/if}
 			<div draggable="false" id="titlewithimageform">
-				<input
-					draggable="false"
-					style="display:none"
-					type="file"
-					accept=".jpg, .jpeg, .png"
-					bind:this={submitimage}
-					on:change={(e) => {
-						setImage(e);
-					}}
-				/>
 				<div
 					draggable="false"
 					id="openedtitlecontainer"
@@ -157,7 +145,10 @@
 				i={currentopened}
 				on:newcolor
 				on:deletePostit
-				on:submitimage={() => submitimage.click()}
+				on:change={(e) => {
+					setImage(e);
+					e.target.value=""
+				}}
 				mini={true}
 			/>
 			<button

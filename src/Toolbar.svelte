@@ -5,7 +5,6 @@
     export let isPalette; /*variable true if the change background color menu is opened*/
     export let setBackground; /*parent function that changes the postit background color*/
 	export let mini; /*true if the toolbar is in a postit and not in new postit, adds the delete icon*/
-	export let i; /*0 if the parent is a single postit, position in $allPostit otherwise*/
 	
 	/*function that opens and closes the change background color menu is opened*/
     function setPalette(){
@@ -27,13 +26,22 @@
 </script>
 
 <div id="tools" on:click|stopPropagation>
-    <span id="toolbaropenimagenote" class="material-symbols-outlined" on:click|stopPropagation={()=>dispatch('submitimage')} style={mini===true ? "font-size: 16px" : "font-size: 24px"}>image</span>
+	<label>
+		<input
+        draggable="false"
+        style="display:none"
+        type="file"
+        accept=".jpg, .jpeg, .png"
+        on:change
+    />
+		<span id="toolbaropenimagenote" class="material-symbols-outlined" style={mini===true ? "font-size: 16px" : "font-size: 24px"}>image</span>
+	</label>
     <span id="toolbaropenpalettenote" class="material-symbols-outlined" on:click|stopPropagation={setPalette} style={mini===true ? "font-size: 16px" : "font-size: 24px"}>palette</span>
 	{#if mini}
 		<span id="deletenote" class="material-symbols-outlined" on:click|stopPropagation={deletenote} style={mini===true ? "font-size: 16px" : "font-size: 24px"}>delete</span>
 	{/if}
     {#if isPalette}
-        <Palette setBackground={setBackground} {mini} {i} on:newcolor/>
+        <Palette setBackground={setBackground} {mini} on:newcolor/>
     {/if}
 </div>
 

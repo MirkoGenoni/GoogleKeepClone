@@ -2,8 +2,6 @@
 	import { tick } from "svelte";
 	import Toolbar from "./Toolbar.svelte";
 
-	const i = 0; /*placeholder variable for toolbar creation*/
-	export let postitid; /*unique id for postit dictionary in allElements*/
 	let bodyAdd =
 		""; /*bind to textarea value for newbody than inserted into body in postit dictionary inside allElements*/
 	let titleAdd =
@@ -27,7 +25,6 @@
 		"#ffffff"; /*current background color then added to postit dictionary inside allElements*/
 
 	let image = ""; /*current image inserted into post*/
-	let submitimage; /*bind to input file necessary to insert image*/
 	let isImage = false; /*true if there is a image inside current new postit*/
 
 	/*HANDLE IMMAGINE ADDITION*/
@@ -56,7 +53,6 @@
 	function deleteimage() {
 		isImage = false;
 		image = "";
-		submitimage.value = "";
 	}
 
 	/*POSTIT CLOSURE HANDLE*/
@@ -78,7 +74,6 @@
 		isPalette = false;
 		isImage = false;
 		image = "";
-		submitimage.value = "";
 	}
 
 	/*function that inserts the new post in allElements when click outside new post forum and not on a postit*/
@@ -86,11 +81,11 @@
 		const handleClick = (event) => {
 			/*this condition controls that the click is not on toolbar or its child elements or on any postit*/
 			if (
-				!node.contains(event.target) &&
 				clicked === true &&
-				event.target.id != "toolbaropenpalette" &&
-				event.target.closest(".postit") == null &&
-				event.target.closest("#background") == null
+				!event.target.closest("#toolbarcontainer") &&
+				!event.target.closest(".newpostit") &&
+				!event.target.closest(".postit") &&
+				!event.target.closest("#background")
 			) {
 				node.dispatchEvent(new CustomEvent("outclick"));
 			}
@@ -116,42 +111,22 @@
 				image: image,
 				isPalette: false,
 			});
-			postitid++;
 		}
 		closeNote();
 		addNote();
 	}
 
 	function makeid(length) {
-    var result           = '';
-    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    var charactersLength = characters.length;
-    for ( var i = 0; i < length; i++ ) {
-        result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
-	}
-
-	/*TOOLBAR HANDLING*/
-	/*function that closes the selection for background color on click outside or the pointer exit the new postit*/
-	function handleout(event) {
-		let nodes;
-		let array = [];
-		if (isPalette === true) {
-			nodes = document.getElementById("optionscontainer").childNodes;
-			nodes.forEach((value) => {
-				array.push(value.id);
-			});
-			array.push("nocoloricon");
+		var result = "";
+		var characters =
+			"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+		var charactersLength = characters.length;
+		for (var i = 0; i < length; i++) {
+			result += characters.charAt(
+				Math.floor(Math.random() * charactersLength)
+			);
 		}
-		if (
-			event.target.id !== "toolbaropenpalettenote" &&
-			event.target.id !== "optionscontainer" &&
-			!array.includes(event.target.id) &&
-			isPalette === true
-		) {
-			isPalette = false;
-		}
+		return result;
 	}
 
 	/*function that saves current selected background color*/
@@ -173,11 +148,6 @@
 			styleTitle = "--height: " + dimensionintTitle.toString() + "px;";
 		}
 	}
-
-	/*PLACEHOLDER*/
-	/*placeholder function for Toolbar creation*/
-	function deleteNote() {}
-	function setNotePalette() {}
 </script>
 
 <div id="newNote">
@@ -186,9 +156,10 @@
 		class="newpostit"
 		use:outsideClick
 		on:outclick={propagateContent}
-		on:click={(e) => handleout(e)}
-		on:mouseleave={(e) => handleout(e)}
-		style= "background-color: {currentBackground}"
+		on:mouseleave={() => {
+			isPalette = false;
+		}}
+		style="background-color: {currentBackground}"
 	>
 		<div id="titlebodyimage">
 			{#if isImage}
@@ -208,15 +179,6 @@
 				</div>
 			{/if}
 			<div id="titlewithimage">
-				<input
-					style="display:none"
-					type="file"
-					accept=".jpg, .jpeg, .png"
-					bind:this={submitimage}
-					on:change={(e) => {
-						setImage(e);
-					}}
-				/>
 				<div
 					id="newtitlecontainer"
 					class="textcontainer"
@@ -232,25 +194,33 @@
 						bind:this={newpostTitle}
 						bind:value={titleAdd}
 						on:input={() => dynamicResizeBody("title")}
+						on:click={()=>{isPalette=false}}
 						style={styleTitle +
-							currentBackground +
 							(isImage === true
 								? "--max-height: none"
 								: "--max-height: 340px")}
 					/>
 				</div>
 				{#if !clicked}
-					<div
-						id="iconcontainer"
-						on:click={() => {
-							submitimage.click();
-						}}
-					>
-						<span
-							id="toolbarclosedimage"
-							class="material-symbols-outlined">image</span
-						>
-					</div>
+					<label>
+						<input
+							draggable="false"
+							style="display:none"
+							type="file"
+							accept=".jpg, .jpeg, .png"
+							on:change={(e) => {
+								setImage(e);
+								e.target.value = "";
+							}}
+						/>
+
+						<div id="iconcontainer">
+							<span
+								id="toolbarclosedimage"
+								class="material-symbols-outlined">image</span
+							>
+						</div>
+					</label>
 				{/if}
 			</div>
 			{#if clicked}
@@ -262,8 +232,8 @@
 						bind:this={newpostBody}
 						bind:value={bodyAdd}
 						on:input={() => dynamicResizeBody("body")}
+						on:click={()=>{isPalette=false}}
 						style={styleBody +
-							currentBackground +
 							(isImage === true
 								? "--max-height: none"
 								: "--max-height: 340px")}
@@ -278,9 +248,11 @@
 					on:newcolor={(e) => {
 						setBackground(e.detail.backgroundcolor);
 					}}
-					on:submitimage={() => submitimage.click()}
+					on:change={(e) => {
+						setImage(e);
+						e.target.value = "";
+					}}
 					mini={false}
-					{i}
 				/>
 				<button
 					id="closenote"
@@ -404,6 +376,7 @@
 		margin: 0px;
 		border: none;
 		white-space: pre-wrap;
+		background-color: transparent;
 	}
 
 	/*PROPERTIES FOR IMPORTED GOOGLE ICONS*/
@@ -482,6 +455,7 @@
 		border: none;
 		outline: none;
 		white-space: pre-wrap;
+		background-color: transparent;
 	}
 
 	/*CLOSE POSTIT BUTTON*/

@@ -7,17 +7,21 @@
     let title;
     let nlines = 1;
 
-    $: (async () => {
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+    const prova =
+        async () => {
         if (title && postit.title) {
-            await tick();
+            await sleep(10);
             nlines = Math.floor(8 - title.offsetHeight / 24);
-            /*console.log(i, title.offsetHeight, nlines);*/
         } else if(!postit.image) {
             nlines = 8;
         } else if (postit.image){
-            nlines = 3;
+            nlines = 2;
         }
-    })();
+    }
+    
+    $: prova(title, postit.title, nlines)
 </script>
 
 <div
@@ -34,16 +38,6 @@
     on:dragover|preventDefault
     on:mouseleave
 >
-    <input
-        draggable="false"
-        id={"submitimage" + i}
-        bind:this={submit}
-        style="display:none"
-        type="file"
-        accept=".jpg, .jpeg, .png"
-        on:change
-        on:click|stopPropagation
-    />
     {#if postit.image}
         <div
             draggable="false"
@@ -88,12 +82,11 @@
         style="background-color: {postit.colorbkg};"
     >
         <Toolbar
-            {i}
             isPalette={postit.isPalette}
             mini={true}
-            on:submitimage={() => submit.click()}
             on:deletePostit
             on:newcolor
+            on:change
         />
     </div>
 </div>
