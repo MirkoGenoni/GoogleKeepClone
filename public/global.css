@@ -41,6 +41,7 @@ input, button, select, textarea {
 	resize: none;
 	outline: none;
 	overflow: hidden;
+	word-wrap: break-word;
 }
 
 input:disabled {

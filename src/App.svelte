@@ -168,7 +168,6 @@
 					setImage(e, i);
 					e.target.value = "";
 				}}
-				{isOpen}
 			/>
 		{/each}
 	</div>

@@ -2,7 +2,6 @@
 	import Toolbar from "./Toolbar.svelte";
 	import { tick } from "svelte";
 	import { onMount } from "svelte";
-    import Postit from "./postit.svelte";
 
 	export let opened; /*allElement's element with all its properties*/
 	export let isOpen; /*true if the postit is open and opens the relative view*/
@@ -64,7 +63,6 @@
 		await tick();
 		title.style = "--height: " + title.scrollHeight + "px;";
 		await tick();
-		console.log(body.scrollHeight)
 		body.style = "--height: " + body.scrollHeight + "px;";
 	});
 
