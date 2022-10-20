@@ -145,7 +145,7 @@
         margin: 11px 16px;
         max-height: 197px;
         white-space: pre-wrap;
-        word-wrap: break-word;
+        word-break: break-word;
     }
 
     /*properties for body container*/
@@ -166,7 +166,7 @@
         display: -webkit-box;
         -webkit-box-orient: vertical;
         overflow: hidden;
-        word-wrap: break-word;
+        word-break: break-word;
     }
 
     .clamp7 {
