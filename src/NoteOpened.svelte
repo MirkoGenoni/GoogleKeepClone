@@ -2,10 +2,10 @@
 	import Toolbar from "./Toolbar.svelte";
 	import { tick } from "svelte";
 	import { onMount } from "svelte";
+    import Postit from "./postit.svelte";
 
 	export let opened; /*allElement's element with all its properties*/
 	export let isOpen; /*true if the postit is open and opens the relative view*/
-	export let currentopened; /*Index of current element of $allPostit opened*/
 	export let addNote; /*parent method necessary to update the page render*/
 
 	let title; /*element bind necessary to dinamically resize the textarea*/
@@ -45,6 +45,7 @@
 	/*TETXTAREA HANDLING*/
 	/*Function that assign the right height of the textarea on input*/
 	async function dynamicResizeBody(props) {
+		console.log("input")
 		if (props == "body") {
 			styleBody = "--height: 0;";
 			await tick();
@@ -60,7 +61,10 @@
 
 	/*function that run jon mount and it assign the right height to the textarea*/
 	onMount(async () => {
+		await tick();
 		title.style = "--height: " + title.scrollHeight + "px;";
+		await tick();
+		console.log(body.scrollHeight)
 		body.style = "--height: " + body.scrollHeight + "px;";
 	});
 
@@ -104,24 +108,21 @@
 					</div>
 				</div>
 			{/if}
-			<div draggable="false" id="titlewithimageform">
-				<div
+			<div
+				draggable="false"
+				id="openedtitlecontainer"
+				class="textcontainer"
+			>
+				<textarea
 					draggable="false"
-					id="openedtitlecontainer"
-					class="textcontainer"
-					style={"--width: 100%"}
-				>
-					<textarea
-						draggable="false"
-						placeholder="Titolo"
-						id="openedtitle"
-						class="title"
-						bind:this={title}
-						bind:value={opened.title}
-						on:input={() => dynamicResizeBody("title")}
-						style={styleTitle}
-					/>
-				</div>
+					placeholder="Titolo"
+					id="openedtitle"
+					class="title"
+					bind:this={title}
+					bind:value={opened.title}
+					on:input={() => dynamicResizeBody("title")}
+					style={styleTitle}
+				/>
 			</div>
 			<div
 				draggable="false"
@@ -142,7 +143,6 @@
 		</div>
 		<div draggable="false" id="toolbarcontainer">
 			<Toolbar
-				i={currentopened}
 				on:newcolor
 				on:deletePostit
 				on:change={(e) => {
@@ -181,7 +181,6 @@
 	#openednote {
 		position: absolute;
 		width: 600px;
-		height: fit-content;
 		border: solid 1px transparent;
 		border-radius: 8px;
 		opacity: 1;
@@ -241,53 +240,28 @@
 		color: white;
 	}
 
-	/*Container for invisible input file and image visualization*/
-	#titlewithimageform {
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-		justify-content: space-between;
-	}
-
 	/*TITLE STYLE*/
 	/*title container*/
 	#openedtitlecontainer {
-		width: var(--width);
 		display: flex;
-		height: fit-content;
-		padding-top: 16px;
-		padding-bottom: 10px;
-		padding-left: 15px;
-		padding-right: 15px;
+		padding: 16px 15px 10px;
 	}
 	/*title textarea*/
 	#openedtitle {
+		width: 100%;
 		height: var(--height);
 		font-size: 22px;
 		color: rgba(0, 0, 0, 0.702);
 		letter-spacing: 0;
 		font-weight: 400;
 		line-height: 1.75rem;
-		overflow: auto;
-		resize: none;
-		border: none;
-		width: 100%;
-		padding: 0px;
-		outline: 0px;
-		margin: 0px;
-		border: none;
-		white-space: pre-wrap;
 	}
 
 	/*BODY STYLE*/
 	/*body container*/
 	#openedbodycontainer {
 		display: flex;
-		height: fit-content;
-		padding-top: 12px;
-		padding-bottom: 12px;
-		padding-left: 16px;
-		padding-right: 16px;
+		padding: 12px 16px; 
 	}
 	/*placeholder font properties for body textarea*/
 	#openedbody::placeholder {
@@ -299,23 +273,13 @@
 	}
 	/*body textarea*/
 	#openedbody {
+		width: 100%;
 		height: var(--height);
-		max-height: var(--max-height);
-		overflow: auto;
-		color: #202124;
 		font-size: 16px;
+		color: #202124;
 		letter-spacing: 0.00625em;
 		font-weight: 400;
 		line-height: 1.5rem;
-		padding: 0px;
-		border-radius: 0px;
-		margin: 0px;
-
-		resize: none;
-		width: 100%;
-		border: none;
-		outline: none;
-		white-space: pre-wrap;
 	}
 
 	/*TOOLBAR HANDLING*/
@@ -335,8 +299,7 @@
 		height: 36px;
 		padding: 8px 24px;
 		border-radius: 4px;
-		margin-top: 2px;
-		margin-bottom: 2px;
+		margin: 2px 0px;
 		font-size: 14px;
 		color: rgba(0, 0, 0, 0.87);
 		font-weight: 500;
@@ -357,5 +320,15 @@
 		align-items: center;
 		border-radius: 100%;
 		opacity: 80%;
+	}
+
+	#titleimagebody::-webkit-scrollbar{
+		background-color: rgba(255, 255, 255, 0);
+		border-radius: 8px;
+		width: 10px;
+	}
+	#titleimagebody::-webkit-scrollbar-thumb{
+		background-color: rgba(0, 0, 0, 0.3);
+		border-radius: 8px;
 	}
 </style>

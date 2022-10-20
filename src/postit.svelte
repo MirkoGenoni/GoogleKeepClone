@@ -1,9 +1,9 @@
 <script>
-    import { tick } from "svelte";
     import Toolbar from "./Toolbar.svelte";
     export let i;
     export let postit;
-    let submit;
+    export let isOpen;
+    
     let title;
     let nlines = 1;
 
@@ -11,13 +11,15 @@
 
     const prova =
         async () => {
-        if (title && postit.title) {
-            await sleep(10);
-            nlines = Math.floor(8 - title.offsetHeight / 24);
-        } else if(!postit.image) {
-            nlines = 8;
-        } else if (postit.image){
-            nlines = 2;
+        if(!isOpen){
+            if (title && postit.title) {
+                await sleep(10);
+                nlines = Math.floor(8 - title.offsetHeight / 24);
+            } else if(!postit.image) {
+                nlines = 8;
+            } else if (postit.image){
+                nlines = 2;
+            }
         }
     }
     

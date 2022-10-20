@@ -22,7 +22,7 @@
 
 	/*function that sets the background of a specific postit*/
 	const setBackground = (i, color) => {
-		$allPostit[i].colorbkg = color;		
+		$allPostit[i].colorbkg = color;
 	};
 
 	/*function that deletes a specific note from $allPostit*/
@@ -63,7 +63,8 @@
 
 	/*function called when the postit is dropped anywhere on the wall*/
 	function walldragend() {
-		document.getElementById("postit"+currentdragging).style.opacity= "100%";
+		document.getElementById("postit" + currentdragging).style.opacity =
+			"100%";
 		currentdragover = null;
 		currentdragging = null;
 	}
@@ -117,83 +118,75 @@
 	/>
 </svelte:head>
 
-<svelte:body
+<div
+	id="page"
+	style="overflow: {isOpen ? 'hidden' : 'auto'}"
 	on:dragend={() => {
 		walldragend();
 	}}
 	on:dragover|preventDefault
-/>
-<div id="page" style="overflow: {isOpen ? "hidden" : "auto"}">
-	<main>
-		{#if isOpen}
-			<NoteOpened
-				opened={$allPostit[currentopened]}
-				on:newcolor={(e) => {
-					setBackground(currentopened, e.detail.backgroundcolor);
+>
+	{#if isOpen}
+		<NoteOpened
+			opened={$allPostit[currentopened]}
+			on:newcolor={(e) => {
+				setBackground(currentopened, e.detail.backgroundcolor);
+			}}
+			on:deletePostit={() => {
+				deleteNote(currentopened);
+			}}
+			{addNote}
+			bind:isOpen
+		/>
+	{/if}
+	<NewNote allElements={$allPostit} {addNote} />
+
+	<div id="notecontainer">
+		{#each $allPostit as postit, i (postit.id)}
+			<Postit
+				{i}
+				{postit}
+				on:mouseleave={(e) => {
+					$allPostit[i].isPalette = false;
+				}}
+				on:drag={(e) => {
+					postitdragstart(e, i);
+				}}
+				on:dragenter={(e) => {
+					dragenter(e, i);
+				}}
+				on:click={(e) => {
+					openNote(e, i);
 				}}
 				on:deletePostit={() => {
-					deleteNote(currentopened);
+					deleteNote(i);
 				}}
-				{currentopened}
-				{addNote}
-				bind:isOpen
+				on:newcolor={(e) => {
+					setBackground(i, e.detail.backgroundcolor);
+				}}
+				on:change={(e) => {
+					setImage(e, i);
+					e.target.value = "";
+				}}
+				{isOpen}
 			/>
-		{/if}
-		<NewNote allElements={$allPostit} {addNote} />
-
-		<div id="notecontainer">
-			{#each $allPostit as postit, i (postit.id)}
-				<Postit
-					{i}
-					{postit}
-					on:mouseleave={(e) => {
-						$allPostit[i].isPalette = false;
-					}}
-					on:drag={(e) => {
-						postitdragstart(e, i);
-					}}
-					on:dragenter={(e) => {
-						dragenter(e, i);
-					}}
-					on:click={(e) => {
-						openNote(e, i);
-					}}
-					on:deletePostit={() => {
-						deleteNote(i);
-					}}
-					on:newcolor={(e) => {
-						setBackground(i, e.detail.backgroundcolor);
-					}}
-					on:change={(e) => {
-						setImage(e, i);
-						e.target.value="";
-					}}
-				/>
-			{/each}
-		</div>
-	</main>
+		{/each}
+	</div>
 </div>
 
 <style>
-	/*sets the font for all the elements*/
-	:global(body) {
-		height: fit-content;
-		margin: 0px;
-		padding: 0px;
-		font-family: "Google Sans", Roboto, Arial, sans-serif;
-	}
-
-	#page{
+	#page {
 		box-sizing: border-box;
 		width: 100vw;
 		height: 100vh;
+		padding-bottom: 32px;
 	}
 	/*container for all the the postit*/
 	#notecontainer {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, 242px);
 		justify-content: center;
-  		column-gap: 10px;
+		column-gap: 10px;
 		margin: 0px 120px;
 	}
 </style>

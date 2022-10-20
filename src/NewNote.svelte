@@ -195,10 +195,7 @@
 						bind:value={titleAdd}
 						on:input={() => dynamicResizeBody("title")}
 						on:click={()=>{isPalette=false}}
-						style={styleTitle +
-							(isImage === true
-								? "--max-height: none"
-								: "--max-height: 340px")}
+						style={styleTitle}
 					/>
 				</div>
 				{#if !clicked}
@@ -233,10 +230,7 @@
 						bind:value={bodyAdd}
 						on:input={() => dynamicResizeBody("body")}
 						on:click={()=>{isPalette=false}}
-						style={styleBody +
-							(isImage === true
-								? "--max-height: none"
-								: "--max-height: 340px")}
+						style={styleBody}
 					/>
 				</div>
 			{/if}
@@ -271,15 +265,12 @@
 		display: flex;
 		justify-content: center;
 		width: 100%;
-		height: fit-content;
-		max-height: 800px;
 		padding-top: 32px;
 		margin-bottom: 16px;
 	}
 
 	/*container of title, body and image that ensure scrolling on overflow*/
 	#titlebodyimage {
-		height: fit-content;
 		max-height: 724px;
 		overflow: auto;
 		border-top-right-radius: 8px;
@@ -331,7 +322,6 @@
 		box-sizing: border-box;
 		width: 598px;
 		white-space: 0px;
-		height: fit-content;
 		box-shadow: 0 1px 2px 0 rgb(60 64 67 / 30%),
 			0 2px 6px 2px rgb(60 64 67 / 15%);
 		border: solid 1px transparent;
@@ -351,11 +341,7 @@
 	#newtitlecontainer {
 		width: var(--width);
 		display: flex;
-		height: auto;
-		padding-top: 10px;
-		padding-bottom: 10px;
-		padding-left: 15px;
-		padding-right: 15px;
+		padding: 10px 15px;
 	}
 
 	/*new title textarea*/
@@ -366,17 +352,7 @@
 		letter-spacing: 0.00625em;
 		font-weight: 500;
 		line-height: 1.5rem;
-		max-height: var(--max-height);
-		overflow: auto;
-		resize: none;
-		border: none;
 		width: 100%;
-		padding: 0px;
-		outline: 0px;
-		margin: 0px;
-		border: none;
-		white-space: pre-wrap;
-		background-color: transparent;
 	}
 
 	/*PROPERTIES FOR IMPORTED GOOGLE ICONS*/
@@ -398,8 +374,8 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		width: 20%;
 		height: 44px;
+		padding-right: 15px;
 	}
 	/*image addition icon*/
 	#toolbarclosedimage {
@@ -422,11 +398,7 @@
 	/*container for body textarea*/
 	#newbodycontainer {
 		display: flex;
-		height: fit-content;
-		padding-top: 12px;
-		padding-bottom: 12px;
-		padding-left: 15px;
-		padding-right: 15px;
+		padding: 12px 15px;
 	}
 	/*poperty for body placeholder text*/
 	#newbody::placeholder {
@@ -439,8 +411,6 @@
 	/*property for body textarea*/
 	#newbody {
 		height: var(--height);
-		max-height: var(--max-height);
-		overflow: auto;
 		color: #202124;
 		font-size: 14px;
 		letter-spacing: 0.01428571em;
@@ -478,5 +448,15 @@
 	}
 	#closenote:active {
 		background-color: rgba(95, 99, 104, 0.161) !important;
+	}
+
+	#titlebodyimage::-webkit-scrollbar{
+		background-color: rgba(255, 255, 255, 0);
+		border-radius: 8px;
+		width: 10px;
+	}
+	#titlebodyimage::-webkit-scrollbar-thumb{
+		background-color: rgba(0, 0, 0, 0.3);
+		border-radius: 8px;
 	}
 </style>

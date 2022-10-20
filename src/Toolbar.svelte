@@ -78,6 +78,7 @@
 
 	/*google icon style*/
     .material-symbols-outlined{
+		cursor: default;
 		user-select: none;
 		display: flex;
 		justify-content: center;
@@ -85,7 +86,9 @@
 		border-radius: 100%;
 		opacity: 80%;
 	}
+
 	.material-symbols-outlined:hover{
 		background-color: rgba(95,99,104,0.157);
 	}
+	
 </style>
