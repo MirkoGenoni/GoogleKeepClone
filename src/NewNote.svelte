@@ -1,5 +1,4 @@
 <script>
-	import { tick } from "svelte";
 	import Toolbar from "./Toolbar.svelte";
 
 	let bodyAdd =
@@ -11,12 +10,7 @@
 	export let addNote; /*parent method to update the view on postit insertion*/
 
 	let clicked = false; /*variable true on click on form for new postit insertion*/
-	let dimensionintBody; /*variable that temporally stores the current size of the div, hidden part also*/
-	let dimensionintTitle; /*variable that temporally stores the current size of the div, hidden part also*/
-	let styleBody =
-		"--height: 20px;"; /*variable passed to the element that contains its style*/
-	let styleTitle =
-		"--height: 24px;"; /*variable passed to the element that contains its style*/
+
 	let newpostTitle; /*bind to textarea element necessary to modify style and value when opened or closed*/
 	let newpostBody; /*bind to textarea element necessary to modify style and value when opened or closed*/
 
@@ -68,8 +62,6 @@
 		newpostBody.valute = "";
 		titleAdd = "";
 		bodyAdd = "";
-		styleBody = "--height: 20px;";
-		styleTitle = "--height: 24px;";
 		currentBackground = "#ffffff";
 		isPalette = false;
 		isImage = false;
@@ -134,19 +126,12 @@
 		currentBackground = color;
 	};
 
-	/*Function that assign the right height of the textarea on input*/
-	async function dynamicResizeBody(props) {
-		if (props == "body") {
-			styleBody = "--height: 0;";
-			await tick();
-			dimensionintBody = newpostBody.scrollHeight;
-			styleBody = "--height: " + dimensionintBody.toString() + "px;";
-		} else {
-			styleTitle = "--height: 0;";
-			await tick();
-			dimensionintTitle = newpostTitle.scrollHeight;
-			styleTitle = "--height: " + dimensionintTitle.toString() + "px;";
-		}
+	function copy(e){
+		let cursor = window.getSelection()
+		cursor.deleteFromDocument();
+		e.target.innerHTML = e.target.innerHTML + e.clipboardData.getData('Text');
+		cursor.modify("move", "forward", "documentboundary");
+		e.target.id==="newtitle" ? titleAdd = e.target.innerHTML : bodyAdd = e.target.innerHTML;
 	}
 </script>
 
@@ -185,17 +170,17 @@
 					style={"--width: " + (clicked === false ? "80%" : "100%")}
 					on:click={setClick}
 				>
-					<textarea
+					<div
+						contenteditable="true"
 						placeholder={clicked === false
 							? "Scrivi una nota..."
 							: "Titolo..."}
 						id="newtitle"
 						class="title"
 						bind:this={newpostTitle}
-						bind:value={titleAdd}
-						on:input={() => dynamicResizeBody("title")}
+						bind:textContent={titleAdd}
 						on:click={()=>{isPalette=false}}
-						style={styleTitle}
+						on:paste|preventDefault={(e)=>copy(e)}
 					/>
 				</div>
 				{#if !clicked}
@@ -222,15 +207,15 @@
 			</div>
 			{#if clicked}
 				<div id="newbodycontainer" class="textcontainer">
-					<textarea
+					<div
+						contenteditable="true"
 						placeholder="Scrivi una nota..."
 						id="newbody"
 						class="body"
 						bind:this={newpostBody}
-						bind:value={bodyAdd}
-						on:input={() => dynamicResizeBody("body")}
+						bind:textContent={bodyAdd}
 						on:click={()=>{isPalette=false}}
-						style={styleBody}
+						on:paste|preventDefault={(e)=>copy(e)}
 					/>
 				</div>
 			{/if}
@@ -342,17 +327,19 @@
 		width: var(--width);
 		display: flex;
 		padding: 10px 15px;
+		box-sizing: border-box;
 	}
 
 	/*new title textarea*/
 	#newtitle {
+		width: 100%;
 		height: var(--height);
 		font-size: 16px;
 		color: rgba(0, 0, 0, 0.702);
 		letter-spacing: 0.00625em;
 		font-weight: 500;
 		line-height: 1.5rem;
-		width: 100%;
+		outline: none;
 	}
 
 	/*PROPERTIES FOR IMPORTED GOOGLE ICONS*/
@@ -420,12 +407,9 @@
 		border-radius: 0px;
 		margin: 0px;
 
-		resize: none;
 		width: 100%;
-		border: none;
 		outline: none;
 		white-space: pre-wrap;
-		background-color: transparent;
 	}
 
 	/*CLOSE POSTIT BUTTON*/

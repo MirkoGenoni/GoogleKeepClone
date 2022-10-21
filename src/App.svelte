@@ -3,6 +3,7 @@
 	import NoteOpened from "./NoteOpened.svelte";
 	import Postit from "./postit.svelte";
 	import persistent from "svelte-persistent-store";
+    import { onMount } from "svelte";
 
 	const allPostit = persistent.local.writable("allpostit", []);
 
@@ -11,6 +12,10 @@
 		$allPostit = $allPostit;
 	}
 
+	onMount(async()=>{
+		$allPostit.length=0;
+	})
+	
 	let currentdragging; /*variable that holds the current position inside the wall div of the element being dragged*/
 	let currentdragover =
 		null; /*variable that hold current position inside wall div of the element on which there is a dragged item*/

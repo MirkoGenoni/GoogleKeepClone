@@ -1,7 +1,6 @@
 <script>
+    import Postit from "./postit.svelte";
 	import Toolbar from "./Toolbar.svelte";
-	import { tick } from "svelte";
-	import { onMount } from "svelte";
 
 	export let opened; /*allElement's element with all its properties*/
 	export let isOpen; /*true if the postit is open and opens the relative view*/
@@ -9,14 +8,6 @@
 
 	let title; /*element bind necessary to dinamically resize the textarea*/
 	let body; /*element bind necessary to dinamically resize the textarea*/
-	let dimensionintBody; /*variable that temporally stores the current size of the div, hidden part also*/
-	let dimensionintTitle; /*variable that temporally stores the current size of the div, hidden part also*/
-
-	let styleBody =
-		"--height: 20px;"; /*variable passed to the body element that contains its height*/
-	let styleTitle =
-		"--height: 24px;"; /*variable passed to the title element that contains its height*/
-
 
 	/*IMAGE HANDLING*/
 	/*function that stores and display the photo added to the postit directly inside $allPostit*/
@@ -41,36 +32,19 @@
 		opened.image = "";
 	}
 
-	/*TETXTAREA HANDLING*/
-	/*Function that assign the right height of the textarea on input*/
-	async function dynamicResizeBody(props) {
-		console.log("input")
-		if (props == "body") {
-			styleBody = "--height: 0;";
-			await tick();
-			dimensionintBody = body.scrollHeight;
-			styleBody = "--height: " + dimensionintBody.toString() + "px;";
-		} else {
-			styleTitle = "--height: 0;";
-			await tick();
-			dimensionintTitle = title.scrollHeight;
-			styleTitle = "--height: " + dimensionintTitle.toString() + "px;";
-		}
-	}
-
-	/*function that run jon mount and it assign the right height to the textarea*/
-	onMount(async () => {
-		await tick();
-		title.style = "--height: " + title.scrollHeight + "px;";
-		await tick();
-		body.style = "--height: " + body.scrollHeight + "px;";
-	});
-
 	/*NOTE CLOSURE HANDLING*/
 	/*function called by the button close that close the note visualization*/
 	function closeNote() {
 		isOpen = false;
 		addNote();
+	}
+
+	function copy(e){
+		let cursor = window.getSelection()
+		cursor.deleteFromDocument();
+		e.target.innerHTML = e.target.innerHTML + e.clipboardData.getData('Text');
+		cursor.modify("move", "forward", "documentboundary");
+		e.target.id==="openedtitle" ? opened.title = e.target.innerHTML : opened.body = e.target.innerHTML;
 	}
 </script>
 
@@ -111,15 +85,15 @@
 				id="openedtitlecontainer"
 				class="textcontainer"
 			>
-				<textarea
+				<div
+					contenteditable="true"
 					draggable="false"
 					placeholder="Titolo"
 					id="openedtitle"
 					class="title"
 					bind:this={title}
-					bind:value={opened.title}
-					on:input={() => dynamicResizeBody("title")}
-					style={styleTitle}
+					bind:textContent={opened.title}
+					on:paste|preventDefault={(e)=>copy(e)}
 				/>
 			</div>
 			<div
@@ -127,15 +101,15 @@
 				id="openedbodycontainer"
 				class="textcontainer"
 			>
-				<textarea
+				<div
+					contenteditable="true"
 					draggable="false"
 					placeholder="Nota"
 					id="openedbody"
 					class="body"
 					bind:this={body}
-					bind:value={opened.body}
-					on:input={() => dynamicResizeBody("body")}
-					style={styleBody}
+					bind:textContent = {opened.body}
+					on:paste|preventDefault={(e)=>copy(e)}
 				/>
 			</div>
 		</div>
@@ -247,12 +221,12 @@
 	/*title textarea*/
 	#openedtitle {
 		width: 100%;
-		height: var(--height);
 		font-size: 22px;
 		color: rgba(0, 0, 0, 0.702);
 		letter-spacing: 0;
 		font-weight: 400;
 		line-height: 1.75rem;
+		outline: none;
 	}
 
 	/*BODY STYLE*/
@@ -272,12 +246,12 @@
 	/*body textarea*/
 	#openedbody {
 		width: 100%;
-		height: var(--height);
 		font-size: 16px;
 		color: #202124;
 		letter-spacing: 0.00625em;
 		font-weight: 400;
 		line-height: 1.5rem;
+		outline: none;
 	}
 
 	/*TOOLBAR HANDLING*/
